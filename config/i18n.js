@@ -1,17 +1,17 @@
 const i18next = require('i18next');
-const Backend = require('i18next-node-fs-backend');
-const i18nextMiddleware = require('i18next-express-middleware');
+const Backend = require('i18next-fs-backend');
+const i18nextMiddleware = require('i18next-http-middleware');
 
 i18next
   .use(Backend)
   .use(i18nextMiddleware.LanguageDetector)
   .init({
     backend: {
-      loadPath: './locales/{{lng}}/{{ns}}.json',
-      addPath: './locales/{{lng}}/{{ns}}.missing.json'
+      loadPath: __dirname + '/../locales/{{lng}}/{{ns}}.json',
+      addPath: __dirname + '/../locales/{{lng}}/{{ns}}.missing.json'
     },
     fallbackLng: 'tr',
-    preload: ['tr', 'en', 'ar', 'de', 'fr'],
+    preload: ['tr', 'en', 'ar'],
     ns: ['translation'],
     defaultNS: 'translation',
     detection: {

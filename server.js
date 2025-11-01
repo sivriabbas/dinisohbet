@@ -11,7 +11,7 @@ const compression = require('compression');
 const helmet = require('helmet');
 const { sanitizeInput } = require('./middleware/security');
 const i18next = require('./config/i18n');
-const i18nextMiddleware = require('i18next-express-middleware');
+const i18nextMiddleware = require('i18next-http-middleware');
 
 const app = express();
 const server = http.createServer(app);
