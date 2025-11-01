@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Günlük Hedefler - DiniSohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="goals-page">
+        <!-- Başlık ve İstatistikler -->
+        <div class="goals-header">
+            <div class="header-icon-bg">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <h1>Günlük Hedeflerim</h1>
+            <p class="goals-subtitle">İlerlemenizi takip edin, hedeflerinize ulaşın ve rozet kazanın!</p>
+        </div>
+
+        <div class="container">
+            <!-- Kullanıcı İstatistikleri -->
+            <div class="user-stats-grid">
+                <div class="stat-card streak-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= user.stats.currentStreak %></h3>
+                        <p>Günlük Seri</p>
+                        <small>En uzun: <%= user.stats.longestStreak %> gün</small>
+                    </div>
+                </div>
+
+                <div class="stat-card points-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= user.stats.totalPoints %></h3>
+                        <p>Toplam Puan</p>
+                        <small><%= user.achievements.length %> rozet kazanıldı</small>
+                    </div>
+                </div>
+
+                <div class="stat-card quran-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book-quran"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= user.stats.totalAyahsRead %></h3>
+                        <p>Ayet Okundu</p>
+                        <small>Toplam okuma</small>
+                    </div>
+                </div>
+
+                <div class="stat-card hadith-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-scroll"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= user.stats.totalHadithsRead %></h3>
+                        <p>Hadis Okundu</p>
+                        <small>Toplam okuma</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aktif Hedefler -->
+            <div class="goals-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-target"></i> Aktif Hedeflerim</h2>
+                    <button class="btn-primary" onclick="toggleCreateGoalForm()">
+                        <i class="fas fa-plus"></i> Yeni Hedef
+                    </button>
+                </div>
+
+                <!-- Hedef Oluşturma Formu -->
+                <div id="create-goal-form" class="create-goal-form" style="display: none;">
+                    <h3><i class="fas fa-plus-circle"></i> Yeni Hedef Oluştur</h3>
+                    <form action="/goals/create" method="POST">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Hedef Türü:</label>
+                                <select name="type" required>
+                                    <option value="daily">Günlük</option>
+                                    <option value="weekly">Haftalık</option>
+                                    <option value="monthly">Aylık</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Kategori:</label>
+                                <select name="category" required>
+                                    <option value="quran">Kuran Okuma</option>
+                                    <option value="hadith">Hadis Okuma</option>
+                                    <option value="dua">Dua Okuma</option>
+                                    <option value="prayer">Namaz Takibi</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Birim:</label>
+                                <select name="unit" required>
+                                    <option value="ayah">Ayet</option>
+                                    <option value="page">Sayfa</option>
+                                    <option value="surah">Sure</option>
+                                    <option value="hadith">Hadis</option>
+                                    <option value="dua">Dua</option>
+                                    <option value="prayer">Namaz</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Hedef Sayı:</label>
+                                <input type="number" name="target" min="1" required placeholder="Örn: 10">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-check"></i> Hedef Oluştur
+                            </button>
+                            <button type="button" class="btn-secondary" onclick="toggleCreateGoalForm()">
+                                <i class="fas fa-times"></i> İptal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Hedefler Listesi -->
+                <div class="goals-grid">
+                    <% if (goals && goals.length > 0) { %>
+                        <% goals.forEach(goal => { %>
+                            <div class="goal-card <%= goal.completed ? 'completed' : '' %>" data-goal-id="<%= goal._id %>">
+                                <div class="goal-header">
+                                    <div class="goal-icon <%= goal.category %>">
+                                        <% if (goal.category === 'quran') { %>
+                                            <i class="fas fa-book-quran"></i>
+                                        <% } else if (goal.category === 'hadith') { %>
+                                            <i class="fas fa-scroll"></i>
+                                        <% } else if (goal.category === 'dua') { %>
+                                            <i class="fas fa-hands-praying"></i>
+                                        <% } else if (goal.category === 'prayer') { %>
+                                            <i class="fas fa-mosque"></i>
+                                        <% } %>
+                                    </div>
+                                    <div class="goal-type-badge <%= goal.type %>">
+                                        <%= goal.type === 'daily' ? 'Günlük' : goal.type === 'weekly' ? 'Haftalık' : 'Aylık' %>
+                                    </div>
+                                </div>
+
+                                <div class="goal-content">
+                                    <h3 class="goal-title">
+                                        <%= goal.target %> <%= goal.unit === 'ayah' ? 'Ayet' : 
+                                            goal.unit === 'page' ? 'Sayfa' :
+                                            goal.unit === 'surah' ? 'Sure' :
+                                            goal.unit === 'hadith' ? 'Hadis' :
+                                            goal.unit === 'dua' ? 'Dua' : 'Namaz' %>
+                                    </h3>
+                                    <p class="goal-category">
+                                        <%= goal.category === 'quran' ? 'Kuran Okuma' :
+                                            goal.category === 'hadith' ? 'Hadis Okuma' :
+                                            goal.category === 'dua' ? 'Dua Okuma' : 'Namaz Takibi' %>
+                                    </p>
+
+                                    <div class="goal-progress">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: <%= goal.completionPercentage %>%"></div>
+                                        </div>
+                                        <div class="progress-text">
+                                            <span><%= goal.progress %> / <%= goal.target %></span>
+                                            <span class="percentage"><%= goal.completionPercentage %>%</span>
+                                        </div>
+                                    </div>
+
+                                    <% if (goal.streak > 0) { %>
+                                    <div class="goal-streak">
+                                        <i class="fas fa-fire"></i> <%= goal.streak %> günlük seri
+                                    </div>
+                                    <% } %>
+
+                                    <% if (goal.completed) { %>
+                                    <div class="goal-completed-badge">
+                                        <i class="fas fa-check-circle"></i> Tamamlandı!
+                                    </div>
+                                    <% } %>
+                                </div>
+
+                                <div class="goal-actions">
+                                    <% if (!goal.completed) { %>
+                                    <button class="btn-progress" onclick="updateProgress('<%= goal._id %>', 1)">
+                                        <i class="fas fa-plus"></i> İlerleme Kaydet
+                                    </button>
+                                    <% } %>
+                                    <button class="btn-delete" onclick="deleteGoal('<%= goal._id %>')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+
+                                <% if (goal.endDate) { %>
+                                <div class="goal-deadline">
+                                    <i class="fas fa-clock"></i> 
+                                    Bitiş: <%= new Date(goal.endDate).toLocaleDateString('tr-TR') %>
+                                </div>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-goals">
+                            <i class="fas fa-bullseye"></i>
+                            <h3>Henüz hedef oluşturmadınız</h3>
+                            <p>Kuran okuma, hadis çalışma veya namaz takibi için hedefler oluşturun!</p>
+                            <button class="btn-primary" onclick="toggleCreateGoalForm()">
+                                <i class="fas fa-plus"></i> İlk Hedefinizi Oluşturun
+                            </button>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Rozetler Bölümü -->
+            <div class="achievements-section">
+                <h2><i class="fas fa-trophy"></i> Rozetler</h2>
+                
+                <div class="achievements-grid">
+                    <% allAchievements.forEach(achievement => { 
+                        const isUnlocked = unlockedAchievementIds.includes(achievement._id.toString());
+                    %>
+                        <div class="achievement-card <%= isUnlocked ? 'unlocked' : 'locked' %> <%= achievement.rarity %>">
+                            <div class="achievement-icon" style="color: <%= achievement.color %>">
+                                <i class="<%= achievement.icon %>"></i>
+                                <% if (isUnlocked) { %>
+                                <div class="achievement-check">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <% } else { %>
+                                <div class="achievement-lock">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <% } %>
+                            </div>
+                            <h4><%= achievement.name %></h4>
+                            <p><%= achievement.description %></p>
+                            <div class="achievement-meta">
+                                <span class="achievement-points">
+                                    <i class="fas fa-star"></i> <%= achievement.points %> puan
+                                </span>
+                                <span class="achievement-rarity <%= achievement.rarity %>">
+                                    <%= achievement.rarity === 'common' ? 'Yaygın' :
+                                        achievement.rarity === 'rare' ? 'Nadir' :
+                                        achievement.rarity === 'epic' ? 'Epik' : 'Efsanevi' %>
+                                </span>
+                            </div>
+                            <% if (!isUnlocked) { %>
+                            <div class="achievement-requirement">
+                                Gereksinim: <%= achievement.requirement %> 
+                                <%= achievement.requirementType === 'streak' ? 'gün seri' :
+                                    achievement.requirementType === 'total_ayahs' ? 'ayet' :
+                                    achievement.requirementType === 'total_hadiths' ? 'hadis' :
+                                    achievement.requirementType === 'total_duas' ? 'dua' : 'hedef' %>
+                            </div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        function toggleCreateGoalForm() {
+            const form = document.getElementById('create-goal-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function updateProgress(goalId, amount) {
+            try {
+                const response = await fetch(`/goals/${goalId}/progress`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ amount })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Sayfayı yenile
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('İlerleme güncelleme hatası:', error);
+                alert('Bir hata oluştu');
+            }
+        }
+
+        async function deleteGoal(goalId) {
+            if (!confirm('Bu hedefi silmek istediğinizden emin misiniz?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/goals/${goalId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Hedef silme hatası:', error);
+                alert('Bir hata oluştu');
+            }
+        }
+    </script>
+
+    <style>
+        .goals-page {
+            min-height: 100vh;
+            background: var(--bg-color);
+            padding: 2rem 0;
+        }
+
+        .goals-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-icon-bg {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+        }
+
+        .header-icon-bg i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .goals-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .goals-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* İstatistik Kartları */
+        .user-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .streak-card .stat-icon {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+        }
+
+        .points-card .stat-icon {
+            background: linear-gradient(135deg, #FFD93D 0%, #FFA500 100%);
+        }
+
+        .quran-card .stat-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .hadith-card .stat-icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .stat-content p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .stat-content small {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Hedefler Bölümü */
+        .goals-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+        }
+
+        /* Hedef Oluşturma Formu */
+        .create-goal-form {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .create-goal-form h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Hedef Kartları */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .goal-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border-left: 4px solid #f5576c;
+        }
+
+        .goal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .goal-card.completed {
+            border-left-color: #4CAF50;
+            opacity: 0.9;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .goal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .goal-icon.quran {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .goal-icon.hadith {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .goal-icon.dua {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .goal-icon.prayer {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .goal-type-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .goal-type-badge.daily {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+        }
+
+        .goal-type-badge.weekly {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .goal-type-badge.monthly {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .goal-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .goal-category {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .goal-progress {
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .percentage {
+            font-weight: 600;
+            color: #f5576c;
+        }
+
+        .goal-streak {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .goal-completed-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4CAF50;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-progress {
+            flex: 1;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-progress:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-delete {
+            padding: 0.75rem 1rem;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .goal-deadline {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .no-goals {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+        }
+
+        .no-goals i {
+            font-size: 4rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Rozetler */
+        .achievements-section {
+            margin-top: 3rem;
+        }
+
+        .achievements-section h2 {
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            color: var(--text-primary);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .achievement-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .achievement-card.locked {
+            opacity: 0.5;
+            filter: grayscale(100%);
+        }
+
+        .achievement-card.unlocked {
+            animation: unlockPulse 0.5s ease;
+        }
+
+        @keyframes unlockPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .achievement-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .achievement-check,
+        .achievement-lock {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .achievement-check {
+            background: #4CAF50;
+        }
+
+        .achievement-lock {
+            background: #999;
+        }
+
+        .achievement-card h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .achievement-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .achievement-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .achievement-points {
+            color: #FFD700;
+            font-weight: 600;
+        }
+
+        .achievement-rarity {
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .achievement-rarity.common {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .achievement-rarity.rare {
+            background: #3498db;
+            color: white;
+        }
+
+        .achievement-rarity.epic {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .achievement-rarity.legendary {
+            background: #f39c12;
+            color: white;
+        }
+
+        .achievement-requirement {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .goals-header h1 {
+                font-size: 2rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .goals-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

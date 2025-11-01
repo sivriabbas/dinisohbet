@@ -1,0 +1,130 @@
+{
+  "site": {
+    "title": "DiniSohbet - Islamic Knowledge and Chat Platform",
+    "description": "Quran, Hadith, Dua and Islamic Content"
+  },
+  "nav": {
+    "home": "Home",
+    "quran": "Holy Quran",
+    "hadiths": "Hadiths",
+    "duas": "Duas",
+    "posts": "Posts",
+    "prayerTimes": "Prayer Times",
+    "qibla": "Qibla",
+    "names": "99 Names of Allah",
+    "calendar": "Islamic Calendar",
+    "community": "Community",
+    "profile": "Profile",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "admin": "Admin",
+    "themes": "Themes",
+    "offline": "Offline Mode",
+    "qa": "Q & A",
+    "chat": "Live Chat",
+    "videos": "Video/Audio"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password",
+    "rememberMe": "Remember Me",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "loginSuccess": "Login successful!",
+    "registerSuccess": "Registration successful!",
+    "logoutSuccess": "Logged out"
+  },
+  "common": {
+    "search": "Search...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "share": "Share",
+    "like": "Like",
+    "comment": "Comment",
+    "read": "Read",
+    "listen": "Listen",
+    "download": "Download",
+    "upload": "Upload",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "language": "Language"
+  },
+  "quran": {
+    "title": "Holy Quran",
+    "surah": "Surah",
+    "verse": "Verse",
+    "juz": "Juz",
+    "page": "Page",
+    "searchVerses": "Search Verses",
+    "arabic": "Arabic",
+    "turkish": "Turkish Translation",
+    "totalVerses": "{{count}} Verses",
+    "meccan": "Meccan",
+    "medinan": "Medinan"
+  },
+  "hadith": {
+    "title": "Hadiths",
+    "source": "Source",
+    "narrator": "Narrator",
+    "searchHadiths": "Search Hadiths",
+    "allSources": "All Sources"
+  },
+  "dua": {
+    "title": "Duas",
+    "category": "Category",
+    "daily": "Daily Duas",
+    "prayer": "Prayer Duas",
+    "special": "Special Duas"
+  },
+  "prayerTimes": {
+    "title": "Prayer Times",
+    "fajr": "Fajr",
+    "sunrise": "Sunrise",
+    "dhuhr": "Dhuhr",
+    "asr": "Asr",
+    "maghrib": "Maghrib",
+    "isha": "Isha",
+    "selectCity": "Select City",
+    "nextPrayer": "Next Prayer",
+    "remaining": "Remaining Time"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "enable": "Enable Notifications",
+    "disable": "Disable Notifications",
+    "prayerReminder": "Prayer Time Reminder",
+    "newContent": "New Content Notification",
+    "settings": "Notification Settings"
+  },
+  "offline": {
+    "title": "Offline Mode",
+    "download": "Download",
+    "downloaded": "Downloaded",
+    "available": "Available Offline",
+    "notAvailable": "Not Available Offline"
+  },
+  "theme": {
+    "title": "Theme Selection",
+    "dark": "Dark",
+    "light": "Light",
+    "custom": "Create Custom Theme"
+  }
+}

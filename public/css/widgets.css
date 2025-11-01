@@ -1,0 +1,533 @@
+/* ==========================================
+   WIDGET SİSTEMİ STİLLERİ
+   ========================================== */
+
+.widgets-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.widget-item {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: move;
+}
+
+.widget-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.widget-item.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.widget-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.widget-title i {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+}
+
+.widget-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.widget-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.widget-action-btn:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+
+.widget-content {
+    color: var(--text-secondary);
+}
+
+/* Widget Settings Button */
+.widget-settings-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: transform 0.3s;
+    z-index: 100;
+}
+
+.widget-settings-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+}
+
+/* Widget Settings Modal */
+.widget-settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.widget-settings-content {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.settings-header h3 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+}
+
+.close-settings {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s;
+}
+
+.close-settings:hover {
+    color: var(--text-primary);
+}
+
+.widget-settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.widget-setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+    cursor: move;
+}
+
+.widget-setting-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-primary);
+}
+
+.widget-setting-info i {
+    color: var(--text-secondary);
+    cursor: grab;
+}
+
+.widget-toggle {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.widget-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.widget-toggle input:checked + .toggle-slider {
+    background-color: #4CAF50;
+}
+
+.widget-toggle input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.reset-widgets-btn {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.reset-widgets-btn:hover {
+    background: #d32f2f;
+}
+
+/* Specific Widget Styles */
+
+/* Daily Ayah Widget */
+.ayah-arabic {
+    font-family: 'Amiri', 'Times New Roman', serif;
+    font-size: 1.8rem;
+    text-align: right;
+    direction: rtl;
+    color: var(--text-primary);
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+    line-height: 2;
+}
+
+.ayah-turkish {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 1rem 0;
+}
+
+.ayah-reference {
+    display: inline-block;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
+}
+
+/* Prayer Times Widget */
+.prayer-times-grid {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.prayer-time-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.prayer-time-row:hover {
+    transform: translateX(5px);
+}
+
+.prayer-time-row .time {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.prayer-time-row.active {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.prayer-time-row.active .time {
+    color: white;
+}
+
+.next-prayer-info {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.countdown-timer {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin: 0.5rem 0;
+}
+
+/* Goals Progress Widget */
+.goals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.goal-item {
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+}
+
+.goal-item-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.goal-title {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.goal-percentage {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.goal-progress-bar {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.goal-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.3s;
+}
+
+.no-goals {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+.no-goals i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+/* Weather Widget */
+.weather-info {
+    text-align: center;
+    padding: 1rem;
+}
+
+.weather-icon {
+    font-size: 4rem;
+    margin: 1rem 0;
+}
+
+.weather-temp {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.weather-desc {
+    color: var(--text-secondary);
+    margin: 0.5rem 0;
+    text-transform: capitalize;
+}
+
+.weather-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.weather-detail {
+    padding: 0.5rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+}
+
+/* Recent Posts Widget */
+.recent-posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mini-post {
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.mini-post:hover {
+    transform: translateX(5px);
+}
+
+.mini-post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.mini-post-author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mini-post-author img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.mini-post-title {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.mini-post-excerpt {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Hadith Widget */
+.hadith-arabic {
+    font-family: 'Amiri', 'Times New Roman', serif;
+    font-size: 1.5rem;
+    text-align: right;
+    direction: rtl;
+    color: var(--text-primary);
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 8px;
+    line-height: 1.8;
+}
+
+.hadith-turkish {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 1rem 0;
+}
+
+.hadith-source {
+    display: inline-block;
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .widgets-container {
+        grid-template-columns: 1fr;
+    }
+
+    .widget-settings-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .widget-item {
+        padding: 1rem;
+    }
+
+    .ayah-arabic {
+        font-size: 1.5rem;
+    }
+
+    .hadith-arabic {
+        font-size: 1.3rem;
+    }
+}
+
+/* Animation for new widgets */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.widget-item {
+    animation: slideInUp 0.4s ease-out;
+}

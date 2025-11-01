@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuran-ı Kerim - Sure Listesi</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-book-quran"></i> Kuran-ı Kerim</h1>
+                <p style="color: #666;">114 Sure - Meal ve Tefsir</p>
+            </div>
+
+            <div class="quran-list">
+                <% if (surahs && surahs.length > 0) { %>
+                    <% surahs.forEach(surah => { %>
+                        <a href="/quran/<%= surah.number %>" class="surah-card">
+                            <div class="surah-number"><%= surah.number %></div>
+                            <div class="surah-info">
+                                <h3><%= surah.name %></h3>
+                                <p class="surah-arabic"><%= surah.nameArabic %></p>
+                                <p class="surah-meaning"><%= surah.meaning %> - <%= surah.numberOfAyahs %> Ayet</p>
+                            </div>
+                            <div class="surah-type <%= surah.revelationType.toLowerCase() %>">
+                                <%= surah.revelationType %>
+                            </div>
+                        </a>
+                    <% }); %>
+                <% } else { %>
+                    <p class="no-content">Henüz sure eklenmemiş.</p>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <style>
+        .quran-list {
+            display: grid;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .surah-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .surah-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .surah-number {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .surah-info {
+            flex: 1;
+        }
+
+        .surah-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+            font-size: 1.3rem;
+        }
+
+        .surah-arabic {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 0.25rem;
+            direction: rtl;
+        }
+
+        .surah-meaning {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .surah-type {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        .surah-type.mekki {
+            background: #28a745;
+        }
+
+        .surah-type.medeni {
+            background: #17a2b8;
+        }
+
+        .no-content {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+    </style>
+</body>
+</html>

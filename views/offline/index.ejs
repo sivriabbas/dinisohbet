@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - DiniSohbet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/main-styles.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="/css/offline.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="offline-hero">
+            <div class="container">
+                <h1>
+                    <i class="fas fa-cloud-download-alt"></i>
+                    Offline Mod Yönetimi
+                </h1>
+                <p>
+                    İçerikleri offline kullanım için indirin ve yönetin
+                </p>
+                <div id="onlineStatus" class="online-status online">
+                    <i class="fas fa-wifi"></i> Çevrimiçi
+                </div>
+            </div>
+        </div>
+
+        <div class="offline-container">
+            <!-- Offline Stats -->
+            <div id="offlineStats" class="offline-stats">
+                <div class="stat-item">
+                    <i class="fas fa-book-quran"></i>
+                    <div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Kuran Sure</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-scroll"></i>
+                    <div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Hadis</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-hands-praying"></i>
+                    <div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Dua</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-database"></i>
+                    <div>
+                        <div class="stat-value">0 MB</div>
+                        <div class="stat-label">Kullanılan Alan</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download Section -->
+            <section class="download-section">
+                <h2><i class="fas fa-download"></i> İçerik İndirme</h2>
+                <p>Aşağıdaki içerikleri offline kullanım için cihazınıza indirin</p>
+
+                <div class="download-grid">
+                    <!-- Quran Download -->
+                    <div class="download-card">
+                        <i class="fas fa-book-quran"></i>
+                        <h3>Kuran-ı Kerim</h3>
+                        <p>Tüm 114 sure ve ayetleri Türkçe meal ile birlikte indirin</p>
+                        <button class="btn-download" onclick="downloadQuranForOffline()">
+                            <i class="fas fa-download"></i> Kuran'ı İndir
+                        </button>
+                    </div>
+
+                    <!-- Hadith Download -->
+                    <div class="download-card">
+                        <i class="fas fa-scroll"></i>
+                        <h3>Hadis Koleksiyonu</h3>
+                        <p>1000+ hadis 6 temel kaynaktan (Buhari, Müslim, vb.)</p>
+                        <button class="btn-download" onclick="downloadHadithsForOffline()">
+                            <i class="fas fa-download"></i> Hadisleri İndir
+                        </button>
+                    </div>
+
+                    <!-- Dua Download -->
+                    <div class="download-card">
+                        <i class="fas fa-hands-praying"></i>
+                        <h3>Dua Koleksiyonu</h3>
+                        <p>Günlük dualar, namaz duaları ve özel dualar</p>
+                        <button class="btn-download" onclick="downloadDuasForOffline()">
+                            <i class="fas fa-download"></i> Duaları İndir
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Management Section -->
+            <section class="management-section">
+                <h2><i class="fas fa-cogs"></i> Veri Yönetimi</h2>
+                <p>Offline verilerinizi yönetin ve senkronize edin</p>
+
+                <div class="management-actions">
+                    <button class="btn-manage btn-sync" onclick="offlineManager.syncOfflineActions()">
+                        <i class="fas fa-sync"></i> Şimdi Senkronize Et
+                    </button>
+                    <button class="btn-manage btn-clear" onclick="clearAllOfflineData()">
+                        <i class="fas fa-trash"></i> Tüm Verileri Temizle
+                    </button>
+                </div>
+
+                <!-- Storage Info -->
+                <div class="storage-info">
+                    <h3><i class="fas fa-hdd"></i> Depolama Kullanımı</h3>
+                    <div class="storage-bar">
+                        <div class="storage-bar-fill" id="storageBarFill" style="width: 0%">
+                            0%
+                        </div>
+                    </div>
+                    <div class="storage-details">
+                        <span id="storageUsed">Kullanılan: 0 MB</span>
+                        <span id="storageQuota">Toplam: 0 MB</span>
+                    </div>
+                </div>
+
+                <!-- Sync Queue -->
+                <div class="sync-queue">
+                    <h3>
+                        <i class="fas fa-clock"></i> 
+                        Bekleyen Senkronizasyonlar
+                        <span id="syncQueueCount" style="margin-left: 10px; color: var(--text-muted); font-size: 0.9rem;">(0)</span>
+                    </h3>
+                    <div id="syncQueueList">
+                        <p style="color: var(--text-muted); text-align: center; padding: 20px;">
+                            Bekleyen senkronizasyon yok
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="features-section">
+                <h2><i class="fas fa-star"></i> Offline Mod Özellikleri</h2>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-wifi-slash feature-icon"></i>
+                        <div class="feature-content">
+                            <h3>İnternet Bağlantısı Gerektirmez</h3>
+                            <p>İndirdiğiniz içeriklere internet olmadan erişebilirsiniz</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <i class="fas fa-database feature-icon"></i>
+                        <div class="feature-content">
+                            <h3>Yerel Depolama</h3>
+                            <p>Veriler cihazınızda güvenli bir şekilde saklanır</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <i class="fas fa-sync feature-icon"></i>
+                        <div class="feature-content">
+                            <h3>Otomatik Senkronizasyon</h3>
+                            <p>Bağlantı sağlandığında offline işlemleriniz otomatik senkronize edilir</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <i class="fas fa-rocket feature-icon"></i>
+                        <div class="feature-content">
+                            <h3>Hızlı Erişim</h3>
+                            <p>İndirilen içeriklere anında erişim sağlayın</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <i class="fas fa-mobile-alt feature-icon"></i>
+                        <div class="feature-content">
+                            <h3>Mobil Uyumlu</h3>
+                            <p>Tüm cihazlarınızda sorunsuz çalışır</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt feature-icon"></i>
+                        <div class="feature-content">
+                            <h3>Güvenli ve Özel</h3>
+                            <p>Verileriniz yalnızca sizin cihazınızda saklanır</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Instructions Section -->
+            <section class="features-section" style="margin-top: 30px;">
+                <h2><i class="fas fa-info-circle"></i> Nasıl Kullanılır?</h2>
+
+                <div style="padding: 20px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05)); border-radius: 10px;">
+                    <ol style="color: var(--text); line-height: 2; padding-left: 20px;">
+                        <li><strong>İçerik İndirin:</strong> Yukarıdaki butonları kullanarak istediğiniz içerikleri indirin</li>
+                        <li><strong>Offline Kullanın:</strong> İnternet bağlantısı olmadan indirdiğiniz içeriklere erişin</li>
+                        <li><strong>Senkronize Edin:</strong> İnternet bağlantısı sağlandığında offline yaptığınız işlemler otomatik olarak senkronize edilir</li>
+                        <li><strong>Depolamayı Yönetin:</strong> Gerektiğinde eski verileri temizleyerek yer açabilirsiniz</li>
+                    </ol>
+
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255, 152, 0, 0.1); border-left: 4px solid #ff9800; border-radius: 5px;">
+                        <p style="margin: 0; color: var(--text);"><strong>💡 İpucu:</strong> Tüm Kuran'ı indirmek yaklaşık 5-10 MB yer kaplar. Hadis koleksiyonu ise yaklaşık 2-3 MB'dır.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script src="/js/offline.js"></script>
+    <script>
+        // Update stats on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait for offline manager to initialize
+            setTimeout(async () => {
+                if (window.offlineManager) {
+                    await updateOfflineStats();
+                    await updateStorageInfo();
+                    await updateSyncQueue();
+                }
+            }, 500);
+        });
+
+        async function updateStorageInfo() {
+            if (!window.offlineManager) return;
+
+            const storageInfo = await offlineManager.getStorageInfo();
+            if (storageInfo) {
+                const barFill = document.getElementById('storageBarFill');
+                const usedElement = document.getElementById('storageUsed');
+                const quotaElement = document.getElementById('storageQuota');
+
+                barFill.style.width = storageInfo.percentage + '%';
+                barFill.textContent = storageInfo.percentage + '%';
+                usedElement.textContent = `Kullanılan: ${storageInfo.usageInMB} MB`;
+                quotaElement.textContent = `Toplam: ${storageInfo.quotaInMB} MB`;
+            }
+        }
+
+        async function updateSyncQueue() {
+            if (!window.offlineManager) return;
+
+            const count = await offlineManager.getCachedCount('syncQueue');
+            const countElement = document.getElementById('syncQueueCount');
+            
+            if (countElement) {
+                countElement.textContent = `(${count})`;
+            }
+        }
+
+        // Refresh stats every 10 seconds
+        setInterval(() => {
+            if (window.offlineManager) {
+                updateOfflineStats();
+                updateStorageInfo();
+                updateSyncQueue();
+            }
+        }, 10000);
+    </script>
+</body>
+</html>

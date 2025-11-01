@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Namaz Vakti Bildirimleri - DiniSohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="notifications-container">
+                <div class="notifications-header">
+                    <div class="header-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h1>Namaz Vakti Bildirimleri</h1>
+                    <p class="subtitle">Vakit geldiğinde hatırlatma al</p>
+                </div>
+
+                <!-- Bildirim İzin Durumu -->
+                <div id="permission-status" class="permission-status">
+                    <div class="status-card checking">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Bildirim durumu kontrol ediliyor...</p>
+                    </div>
+                </div>
+
+                <!-- Bildirim Ayarları -->
+                <div id="notification-settings" class="notification-settings" style="display: none;">
+                    <!-- Şehir Seçimi -->
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <h2>Şehir Seçimi</h2>
+                        </div>
+                        <div class="card-body">
+                            <select id="city-select" class="form-select">
+                                <% cities.forEach(city => { %>
+                                    <option value="<%= city %>" <%= city === 'Istanbul' ? 'selected' : '' %>>
+                                        <%= city %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <p class="help-text">Namaz vakitleri bu şehre göre hesaplanacak</p>
+                        </div>
+                    </div>
+
+                    <!-- Vakitler -->
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="fas fa-clock"></i>
+                            <h2>Bildirim Almak İstediğiniz Vakitler</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="prayer-toggles">
+                                <div class="prayer-toggle">
+                                    <div class="toggle-info">
+                                        <i class="fas fa-cloud-moon"></i>
+                                        <div>
+                                            <strong>İmsak</strong>
+                                            <span id="time-fajr" class="prayer-time">--:--</span>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="notify-fajr" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="prayer-toggle">
+                                    <div class="toggle-info">
+                                        <i class="fas fa-sun"></i>
+                                        <div>
+                                            <strong>Güneş</strong>
+                                            <span id="time-sunrise" class="prayer-time">--:--</span>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="notify-sunrise">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="prayer-toggle">
+                                    <div class="toggle-info">
+                                        <i class="fas fa-cloud-sun"></i>
+                                        <div>
+                                            <strong>Öğle</strong>
+                                            <span id="time-dhuhr" class="prayer-time">--:--</span>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="notify-dhuhr" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="prayer-toggle">
+                                    <div class="toggle-info">
+                                        <i class="fas fa-cloud"></i>
+                                        <div>
+                                            <strong>İkindi</strong>
+                                            <span id="time-asr" class="prayer-time">--:--</span>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="notify-asr" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="prayer-toggle">
+                                    <div class="toggle-info">
+                                        <i class="fas fa-cloud-moon"></i>
+                                        <div>
+                                            <strong>Akşam</strong>
+                                            <span id="time-maghrib" class="prayer-time">--:--</span>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="notify-maghrib" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="prayer-toggle">
+                                    <div class="toggle-info">
+                                        <i class="fas fa-moon"></i>
+                                        <div>
+                                            <strong>Yatsı</strong>
+                                            <span id="time-isha" class="prayer-time">--:--</span>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="notify-isha" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ezan Sesi -->
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="fas fa-volume-up"></i>
+                            <h2>Ezan Sesi</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="sound-settings">
+                                <div class="setting-row">
+                                    <div class="setting-info">
+                                        <strong>Ezan Sesi Çal</strong>
+                                        <p>Bildirimle birlikte ezan sesi çalınır</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="play-adhan" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-row">
+                                    <div class="setting-info">
+                                        <strong>Ses Seviyesi</strong>
+                                    </div>
+                                    <input type="range" id="volume-slider" min="0" max="100" value="50" class="volume-slider">
+                                    <span id="volume-value" class="volume-value">50%</span>
+                                </div>
+
+                                <button id="test-sound-btn" class="btn btn-secondary">
+                                    <i class="fas fa-play"></i> Sesi Test Et
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bildirim Öncesi Uyarı -->
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="fas fa-clock"></i>
+                            <h2>Bildirim Zamanlaması</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <strong>Vakit Girmeden Önce Hatırlat</strong>
+                                    <p>Vakitten kaç dakika önce bildirim alayım?</p>
+                                </div>
+                                <select id="notification-before" class="form-select small">
+                                    <option value="0">Vakit girdiğinde</option>
+                                    <option value="5">5 dakika önce</option>
+                                    <option value="10">10 dakika önce</option>
+                                    <option value="15">15 dakika önce</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kaydet Butonu -->
+                    <div class="save-section">
+                        <button id="save-settings-btn" class="btn btn-primary btn-large">
+                            <i class="fas fa-save"></i> Ayarları Kaydet
+                        </button>
+                        <p class="save-info">
+                            <i class="fas fa-info-circle"></i>
+                            Ayarlar tarayıcınızda saklanır. Bildirimlerin çalışması için sekme açık kalmalı.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bildirimler Devre Dışı Mesajı -->
+                <div id="notifications-disabled" class="alert-message" style="display: none;">
+                    <i class="fas fa-bell-slash"></i>
+                    <h3>Bildirimler Kapalı</h3>
+                    <p>Bildirim izni vermediniz veya tarayıcınız bildirimleri desteklemiyor.</p>
+                    <button id="request-permission-btn" class="btn btn-primary">
+                        <i class="fas fa-bell"></i> Bildirim İzni Ver
+                    </button>
+                </div>
+
+                <!-- Test Bildirimi -->
+                <div class="test-section">
+                    <button id="test-notification-btn" class="btn btn-outline">
+                        <i class="fas fa-bell"></i> Test Bildirimi Gönder
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script src="/js/prayer-notifications.js"></script>
+
+    <style>
+        .notifications-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        .notifications-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+            animation: bellRing 2s infinite;
+        }
+
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0deg); }
+            10% { transform: rotate(15deg); }
+            20% { transform: rotate(-15deg); }
+            30% { transform: rotate(10deg); }
+            40% { transform: rotate(-10deg); }
+            50% { transform: rotate(0deg); }
+        }
+
+        .header-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .notifications-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Permission Status */
+        .permission-status {
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .status-card i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-card.checking i {
+            color: #3b82f6;
+        }
+
+        .status-card.granted {
+            border: 2px solid #22c55e;
+        }
+
+        .status-card.granted i {
+            color: #22c55e;
+        }
+
+        .status-card.denied {
+            border: 2px solid #ef4444;
+        }
+
+        .status-card.denied i {
+            color: #ef4444;
+        }
+
+        /* Settings Card */
+        .settings-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Form Elements */
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-select.small {
+            width: auto;
+            min-width: 200px;
+        }
+
+        .help-text {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Prayer Toggles */
+        .prayer-toggles {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .prayer-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .prayer-toggle:hover {
+            background: var(--border-color);
+            transform: translateX(5px);
+        }
+
+        .toggle-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toggle-info i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            width: 30px;
+            text-align: center;
+        }
+
+        .toggle-info strong {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+
+        .prayer-time {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Sound Settings */
+        .sound-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+        }
+
+        .setting-info strong {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 0.3rem;
+        }
+
+        .setting-info p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .volume-slider {
+            width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-color);
+            outline: none;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .volume-slider:hover {
+            opacity: 1;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .volume-value {
+            font-weight: 700;
+            color: var(--primary-color);
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* Save Section */
+        .save-section {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .btn-large {
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+        }
+
+        .save-info {
+            margin-top: 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .save-info i {
+            color: #3b82f6;
+        }
+
+        /* Alert Message */
+        .alert-message {
+            background: var(--card-bg);
+            border: 2px solid #ef4444;
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .alert-message i {
+            font-size: 4rem;
+            color: #ef4444;
+            margin-bottom: 1rem;
+        }
+
+        .alert-message h3 {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .alert-message p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* Test Section */
+        .test-section {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px dashed var(--border-color);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .notifications-header h1 {
+                font-size: 2rem;
+            }
+
+            .setting-row {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .volume-slider {
+                width: 100%;
+            }
+
+            .btn-large {
+                width: 100%;
+            }
+        }
+    </style>
+</body>
+</html>

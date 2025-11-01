@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notlarım & İşaretlerim - DiniSohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="notes-page">
+        <!-- Başlık -->
+        <div class="notes-header">
+            <div class="header-icon-bg">
+                <i class="fas fa-bookmark"></i>
+            </div>
+            <h1>Notlarım & İşaretlerim</h1>
+            <p class="notes-subtitle">Okumalarınızı kaydedin, notlar alın ve işaretleyin</p>
+        </div>
+
+        <div class="container">
+            <!-- İstatistikler -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon notes-icon">
+                        <i class="fas fa-note-sticky"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= stats.totalNotes %></h3>
+                        <p>Toplam Not</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon bookmarks-icon">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= stats.totalBookmarks %></h3>
+                        <p>İşaretler</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon quran-icon">
+                        <i class="fas fa-book-quran"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= stats.quranNotes %></h3>
+                        <p>Kuran Notları</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon favorite-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= stats.favoriteNotes %></h3>
+                        <p>Favori Notlar</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtreler -->
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label>Tür:</label>
+                    <div class="filter-buttons">
+                        <a href="/notes" class="filter-btn <%= currentType === 'all' ? 'active' : '' %>">
+                            <i class="fas fa-th"></i> Tümü
+                        </a>
+                        <a href="/notes?type=quran" class="filter-btn <%= currentType === 'quran' ? 'active' : '' %>">
+                            <i class="fas fa-book-quran"></i> Kuran
+                        </a>
+                        <a href="/notes?type=hadith" class="filter-btn <%= currentType === 'hadith' ? 'active' : '' %>">
+                            <i class="fas fa-scroll"></i> Hadis
+                        </a>
+                        <a href="/notes?type=dua" class="filter-btn <%= currentType === 'dua' ? 'active' : '' %>">
+                            <i class="fas fa-hands-praying"></i> Dua
+                        </a>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Filtre:</label>
+                    <div class="filter-buttons">
+                        <a href="/notes<%= currentType !== 'all' ? '?type=' + currentType : '' %>" 
+                           class="filter-btn <%= currentFilter === 'all' ? 'active' : '' %>">
+                            Hepsi
+                        </a>
+                        <a href="/notes?filter=favorites<%= currentType !== 'all' ? '&type=' + currentType : '' %>" 
+                           class="filter-btn <%= currentFilter === 'favorites' ? 'active' : '' %>">
+                            <i class="fas fa-heart"></i> Favoriler
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('notes')">
+                        <i class="fas fa-note-sticky"></i> Notlarım (<%= notes.length %>)
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('bookmarks')">
+                        <i class="fas fa-bookmark"></i> İşaretlerim (<%= bookmarks.length %>)
+                    </button>
+                </div>
+
+                <!-- Notlar Tab -->
+                <div id="notes-tab" class="tab-content active">
+                    <% if (notes && notes.length > 0) { %>
+                        <div class="notes-grid">
+                            <% notes.forEach(note => { %>
+                                <div class="note-card highlight-<%= note.highlightColor %>">
+                                    <div class="note-header">
+                                        <div class="note-type-badge <%= note.type %>">
+                                            <% if (note.type === 'quran') { %>
+                                                <i class="fas fa-book-quran"></i> Kuran
+                                            <% } else if (note.type === 'hadith') { %>
+                                                <i class="fas fa-scroll"></i> Hadis
+                                            <% } else { %>
+                                                <i class="fas fa-hands-praying"></i> Dua
+                                            <% } %>
+                                        </div>
+                                        <button class="btn-favorite <%= note.isFavorite ? 'active' : '' %>" 
+                                                onclick="toggleNoteFavorite('<%= note._id %>', <%= !note.isFavorite %>)">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="note-reference">
+                                        <% if (note.type === 'quran') { %>
+                                            <h3>
+                                                <a href="/quran/<%= note.surahNumber %>#ayah-<%= note.ayahNumber %>">
+                                                    Sure <%= note.surahNumber %>, Ayet <%= note.ayahNumber %>
+                                                </a>
+                                            </h3>
+                                        <% } else if (note.type === 'hadith' && note.hadithId) { %>
+                                            <h3>
+                                                <a href="/hadiths/<%= note.hadithId._id %>">
+                                                    <%= note.hadithId.title %>
+                                                </a>
+                                            </h3>
+                                        <% } else if (note.type === 'dua' && note.duaId) { %>
+                                            <h3>
+                                                <a href="/duas/<%= note.duaId._id %>">
+                                                    <%= note.duaId.title %>
+                                                </a>
+                                            </h3>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="note-content">
+                                        <%= note.content %>
+                                    </div>
+
+                                    <% if (note.tags && note.tags.length > 0) { %>
+                                    <div class="note-tags">
+                                        <% note.tags.forEach(tag => { %>
+                                            <span class="tag"><i class="fas fa-tag"></i> <%= tag %></span>
+                                        <% }); %>
+                                    </div>
+                                    <% } %>
+
+                                    <div class="note-footer">
+                                        <span class="note-date">
+                                            <i class="fas fa-clock"></i>
+                                            <%= new Date(note.createdAt).toLocaleDateString('tr-TR') %>
+                                        </span>
+                                        <div class="note-actions">
+                                            <button class="btn-edit" onclick="editNote('<%= note._id %>')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn-delete" onclick="deleteNote('<%= note._id %>')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <i class="fas fa-note-sticky"></i>
+                            <h3>Henüz not eklemediniz</h3>
+                            <p>Kuran okurken veya hadis çalışırken notlar alabilirsiniz</p>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- İşaretler Tab -->
+                <div id="bookmarks-tab" class="tab-content">
+                    <% if (bookmarks && bookmarks.length > 0) { %>
+                        <div class="bookmarks-grid">
+                            <% bookmarks.forEach(bookmark => { %>
+                                <div class="bookmark-card">
+                                    <div class="bookmark-header">
+                                        <div class="bookmark-type-badge <%= bookmark.type %>">
+                                            <% if (bookmark.type === 'quran') { %>
+                                                <i class="fas fa-book-quran"></i> Kuran
+                                            <% } else if (bookmark.type === 'hadith') { %>
+                                                <i class="fas fa-scroll"></i> Hadis
+                                            <% } else { %>
+                                                <i class="fas fa-hands-praying"></i> Dua
+                                            <% } %>
+                                        </div>
+                                        <div class="bookmark-category <%= bookmark.category %>">
+                                            <% if (bookmark.category === 'reading') { %>
+                                                <i class="fas fa-book-open"></i> Okuma
+                                            <% } else if (bookmark.category === 'favorite') { %>
+                                                <i class="fas fa-heart"></i> Favori
+                                            <% } else if (bookmark.category === 'study') { %>
+                                                <i class="fas fa-graduation-cap"></i> Çalışma
+                                            <% } else if (bookmark.category === 'memorize') { %>
+                                                <i class="fas fa-brain"></i> Ezber
+                                            <% } else { %>
+                                                <i class="fas fa-bookmark"></i> Diğer
+                                            <% } %>
+                                        </div>
+                                    </div>
+
+                                    <div class="bookmark-content">
+                                        <% if (bookmark.type === 'quran') { %>
+                                            <h3>
+                                                <a href="/quran/<%= bookmark.surahNumber %>#ayah-<%= bookmark.ayahNumber %>">
+                                                    <%= bookmark.surahName || 'Sure ' + bookmark.surahNumber %>, Ayet <%= bookmark.ayahNumber %>
+                                                </a>
+                                            </h3>
+                                            <% if (bookmark.ayahText) { %>
+                                                <p class="bookmark-text"><%= bookmark.ayahText.substring(0, 150) %>...</p>
+                                            <% } %>
+                                        <% } else if (bookmark.type === 'hadith') { %>
+                                            <h3>
+                                                <a href="/hadiths/<%= bookmark.hadithId %>">
+                                                    <%= bookmark.hadithTitle %>
+                                                </a>
+                                            </h3>
+                                        <% } else if (bookmark.type === 'dua') { %>
+                                            <h3>
+                                                <a href="/duas/<%= bookmark.duaId %>">
+                                                    <%= bookmark.duaTitle %>
+                                                </a>
+                                            </h3>
+                                        <% } %>
+
+                                        <% if (bookmark.note) { %>
+                                        <p class="bookmark-note"><i class="fas fa-sticky-note"></i> <%= bookmark.note %></p>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="bookmark-footer">
+                                        <span class="bookmark-date">
+                                            <i class="fas fa-clock"></i>
+                                            <%= new Date(bookmark.createdAt).toLocaleDateString('tr-TR') %>
+                                        </span>
+                                        <button class="btn-delete-bookmark" onclick="deleteBookmark('<%= bookmark._id %>')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <i class="fas fa-bookmark"></i>
+                            <h3>Henüz işaret eklemediniz</h3>
+                            <p>Okuma sırasında sayfalarınızı işaretleyebilirsiniz</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        function switchTab(tabName) {
+            // Tab butonlarını güncelle
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tab-btn').classList.add('active');
+
+            // Tab içeriklerini güncelle
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        async function toggleNoteFavorite(noteId, isFavorite) {
+            try {
+                const response = await fetch(`/notes/${noteId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isFavorite })
+                });
+
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Favori güncelleme hatası:', error);
+            }
+        }
+
+        async function deleteNote(noteId) {
+            if (!confirm('Bu notu silmek istediğinizden emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/notes/${noteId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Not silme hatası:', error);
+            }
+        }
+
+        async function deleteBookmark(bookmarkId) {
+            if (!confirm('Bu işareti silmek istediğinizden emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/notes/bookmarks/${bookmarkId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('İşaret silme hatası:', error);
+            }
+        }
+
+        function editNote(noteId) {
+            // Basit edit modalı (geliştirilecek)
+            const newContent = prompt('Yeni not içeriği:');
+            if (newContent) {
+                fetch(`/notes/${noteId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: newContent })
+                }).then(() => location.reload());
+            }
+        }
+    </script>
+
+    <style>
+        .notes-page {
+            min-height: 100vh;
+            background: var(--bg-color);
+            padding: 2rem 0;
+        }
+
+        .notes-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-icon-bg {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .header-icon-bg i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .notes-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .notes-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* İstatistikler */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .notes-icon { background: linear-gradient(135deg, #FFD93D 0%, #FFA500 100%); }
+        .bookmarks-icon { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .quran-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .favorite-icon { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .stat-content p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Filtreler */
+        .filters-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-group {
+            margin-bottom: 1rem;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            background: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-color: #4facfe;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            color: #4facfe;
+            border-bottom-color: #4facfe;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Notlar */
+        .notes-grid,
+        .bookmarks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .note-card {
+            background: var(--bg-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid;
+            box-shadow: var(--shadow);
+        }
+
+        .note-card.highlight-yellow { border-left-color: #FFD93D; }
+        .note-card.highlight-green { border-left-color: #4CAF50; }
+        .note-card.highlight-blue { border-left-color: #2196F3; }
+        .note-card.highlight-pink { border-left-color: #E91E63; }
+        .note-card.highlight-purple { border-left-color: #9C27B0; }
+        .note-card.highlight-orange { border-left-color: #FF9800; }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .note-type-badge,
+        .bookmark-type-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .note-type-badge.quran,
+        .bookmark-type-badge.quran {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .note-type-badge.hadith,
+        .bookmark-type-badge.hadith {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .note-type-badge.dua,
+        .bookmark-type-badge.dua {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .btn-favorite {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-favorite.active,
+        .btn-favorite:hover {
+            color: #f5576c;
+        }
+
+        .note-reference h3 {
+            margin: 0 0 1rem;
+            font-size: 1.1rem;
+        }
+
+        .note-reference a {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .note-reference a:hover {
+            color: #4facfe;
+        }
+
+        .note-content {
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .note-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .note-footer,
+        .bookmark-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .note-date,
+        .bookmark-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-edit,
+        .btn-delete,
+        .btn-delete-bookmark {
+            padding: 0.5rem;
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            background: #4facfe;
+            color: white;
+            border-color: #4facfe;
+        }
+
+        .btn-delete:hover,
+        .btn-delete-bookmark:hover {
+            background: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+
+        /* İşaretler */
+        .bookmark-card {
+            background: var(--bg-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .bookmark-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .bookmark-category {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .bookmark-category.reading { background: #4CAF50; }
+        .bookmark-category.favorite { background: #f5576c; }
+        .bookmark-category.study { background: #2196F3; }
+        .bookmark-category.memorize { background: #9C27B0; }
+        .bookmark-category.other { background: #757575; }
+
+        .bookmark-content h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .bookmark-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .bookmark-note {
+            padding: 0.75rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-top: 0.5rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .notes-header h1 {
+                font-size: 2rem;
+            }
+
+            .notes-grid,
+            .bookmarks-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</body>
+</html>

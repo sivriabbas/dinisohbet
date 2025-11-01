@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Namaz Vakitleri ve Kıble</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-clock"></i> Namaz Vakitleri</h1>
+                <p style="color: #666;">Günlük Namaz Vakitleri ve Kıble Yönü</p>
+            </div>
+
+            <div class="location-selector">
+                <div class="location-input">
+                    <label><i class="fas fa-location-dot"></i> Şehir Seçin:</label>
+                    <select id="citySelect">
+                        <option value="Istanbul" <%= selectedCity === 'Istanbul' ? 'selected' : '' %>>İstanbul</option>
+                        <option value="Ankara" <%= selectedCity === 'Ankara' ? 'selected' : '' %>>Ankara</option>
+                        <option value="Izmir" <%= selectedCity === 'Izmir' ? 'selected' : '' %>>İzmir</option>
+                        <option value="Bursa" <%= selectedCity === 'Bursa' ? 'selected' : '' %>>Bursa</option>
+                        <option value="Antalya" <%= selectedCity === 'Antalya' ? 'selected' : '' %>>Antalya</option>
+                        <option value="Konya" <%= selectedCity === 'Konya' ? 'selected' : '' %>>Konya</option>
+                        <option value="Adana" <%= selectedCity === 'Adana' ? 'selected' : '' %>>Adana</option>
+                    </select>
+                </div>
+                <button id="useLocationBtn" class="btn btn-primary">
+                    <i class="fas fa-crosshairs"></i> Konumumu Kullan
+                </button>
+            </div>
+
+            <div class="date-info">
+                <h3><i class="fas fa-calendar"></i> <%= typeof date !== 'undefined' ? date : new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></h3>
+                <% if (typeof hijriDate !== 'undefined' && hijriDate) { %>
+                    <p style="color: var(--accent-color); margin-top: 0.5rem;">Hicri: <%= hijriDate %></p>
+                <% } %>
+            </div>
+
+            <div class="prayer-times-grid">
+                <div class="prayer-time-card">
+                    <div class="prayer-icon"><i class="fas fa-sun"></i></div>
+                    <h3>İmsak</h3>
+                    <p class="time" id="fajr"><%= typeof prayerTimes !== 'undefined' ? prayerTimes.fajr : '05:30' %></p>
+                </div>
+                <div class="prayer-time-card">
+                    <div class="prayer-icon"><i class="fas fa-cloud-sun"></i></div>
+                    <h3>Güneş</h3>
+                    <p class="time" id="sunrise"><%= typeof prayerTimes !== 'undefined' ? prayerTimes.sunrise : '07:15' %></p>
+                </div>
+                <div class="prayer-time-card">
+                    <div class="prayer-icon"><i class="fas fa-sun-bright"></i></div>
+                    <h3>Öğle</h3>
+                    <p class="time" id="dhuhr"><%= typeof prayerTimes !== 'undefined' ? prayerTimes.dhuhr : '13:05' %></p>
+                </div>
+                <div class="prayer-time-card">
+                    <div class="prayer-icon"><i class="fas fa-cloud-sun"></i></div>
+                    <h3>İkindi</h3>
+                    <p class="time" id="asr"><%= typeof prayerTimes !== 'undefined' ? prayerTimes.asr : '15:45' %></p>
+                </div>
+                <div class="prayer-time-card">
+                    <div class="prayer-icon"><i class="fas fa-moon"></i></div>
+                    <h3>Akşam</h3>
+                    <p class="time" id="maghrib"><%= typeof prayerTimes !== 'undefined' ? prayerTimes.maghrib : '18:20' %></p>
+                </div>
+                <div class="prayer-time-card">
+                    <div class="prayer-icon"><i class="fas fa-star"></i></div>
+                    <h3>Yatsı</h3>
+                    <p class="time" id="isha"><%= typeof prayerTimes !== 'undefined' ? prayerTimes.isha : '19:55' %></p>
+                </div>
+            </div>
+
+            <div class="qibla-section">
+                <h2><i class="fas fa-kaaba"></i> Kıble Yönü</h2>
+                <div class="qibla-compass">
+                    <div class="compass-circle">
+                        <div class="compass-arrow" id="qiblaArrow">
+                            <i class="fas fa-location-arrow"></i>
+                        </div>
+                        <div class="compass-directions">
+                            <span class="north">K</span>
+                            <span class="east">D</span>
+                            <span class="south">G</span>
+                            <span class="west">B</span>
+                        </div>
+                    </div>
+                    <p class="qibla-info">Kıble Açısı: <strong id="qiblaAngle">147°</strong></p>
+                    <button id="findQiblaBtn" class="btn btn-primary">
+                        <i class="fas fa-compass"></i> Kıble Bul
+                    </button>
+                </div>
+            </div>
+
+            <div class="prayer-info-section">
+                <h3><i class="fas fa-info-circle"></i> Namaz Hakkında</h3>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <h4>Vakit Namazları</h4>
+                        <p>Günde beş vakit namaz İslam'ın beş şartından biridir. Her Müslüman için farzdır.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Cemaatle Namaz</h4>
+                        <p>Cemaatle kılınan namaz, tek başına kılınan namazdan 27 derece daha faziletlidir.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Namazın Önemi</h4>
+                        <p>"Namaz dinin direğidir." (Hadis-i Şerif)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Şehir değişikliği
+            document.getElementById('citySelect').addEventListener('change', function() {
+                const city = this.value;
+                window.location.href = `/prayer-times?city=${city}`;
+            });
+
+            // Konum kullan butonu
+            document.getElementById('useLocationBtn').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            alert(`Konum alındı: ${position.coords.latitude}, ${position.coords.longitude}`);
+                            // API ile namaz vakitlerini çek
+                        },
+                        (error) => {
+                            alert('Konum alınamadı. Lütfen şehir seçin.');
+                        }
+                    );
+                } else {
+                    alert('Tarayıcınız konum özelliğini desteklemiyor.');
+                }
+            });
+
+            // Kıble bul butonu
+            document.getElementById('findQiblaBtn').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            
+                            // Kabe koordinatları: 21.4225° K, 39.8262° D
+                            const kaabaLat = 21.4225;
+                            const kaabaLon = 39.8262;
+                            
+                            // Kıble açısını hesapla
+                            const angle = calculateQiblaAngle(lat, lon, kaabaLat, kaabaLon);
+                            document.getElementById('qiblaAngle').textContent = Math.round(angle) + '°';
+                            document.getElementById('qiblaArrow').style.transform = `rotate(${angle}deg)`;
+                        },
+                        (error) => {
+                            alert('Konum alınamadı. Lütfen konum izni verin.');
+                        }
+                    );
+                }
+            });
+        });
+
+        function calculateQiblaAngle(lat1, lon1, lat2, lon2) {
+            const toRad = (deg) => deg * Math.PI / 180;
+            const toDeg = (rad) => rad * 180 / Math.PI;
+            
+            const dLon = toRad(lon2 - lon1);
+            const y = Math.sin(dLon) * Math.cos(toRad(lat2));
+            const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+                      Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+            
+            let angle = toDeg(Math.atan2(y, x));
+            return (angle + 360) % 360;
+        }
+
+        // Sayfa yüklendiğinde gerçek namaz vakitlerini API'den çek
+        window.addEventListener('load', async () => {
+            try {
+                const city = document.getElementById('citySelect').value;
+                // Burada gerçek API entegrasyonu yapılabilir
+                // Örnek: Diyanet API veya aladhan.com API
+            } catch (error) {
+                console.error('Namaz vakitleri alınamadı:', error);
+            }
+        });
+    </script>
+
+    <style>
+        .location-selector {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .location-input {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .location-input label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .location-input select {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .date-info {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), #1a4620);
+            color: var(--white);
+            border-radius: 10px;
+        }
+
+        .prayer-times-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .prayer-time-card {
+            background: var(--white);
+            padding: 2rem 1rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .prayer-time-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .prayer-icon {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .prayer-time-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .prayer-time-card .time {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .qibla-section {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .qibla-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        .qibla-compass {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .compass-circle {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 10px solid var(--primary-color);
+            position: relative;
+            margin: 0 auto 2rem;
+            background: linear-gradient(135deg, #e8f5e9, #fff);
+        }
+
+        .compass-arrow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(147deg);
+            font-size: 3rem;
+            color: var(--accent-color);
+            transition: transform 1s ease;
+        }
+
+        .compass-directions {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .compass-directions span {
+            position: absolute;
+        }
+
+        .compass-directions .north {
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .compass-directions .east {
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .compass-directions .south {
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .compass-directions .west {
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .qibla-info {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        .qibla-info strong {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .prayer-info-section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+        }
+
+        .prayer-info-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            padding: 1.5rem;
+            background: #e8f5e9;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .info-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card p {
+            color: #555;
+            line-height: 1.6;
+        }
+    </style>
+</body>
+</html>

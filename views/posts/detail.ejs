@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= post.title %> - Dini Sohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="post-detail">
+                <div class="post-header">
+                    <div class="post-meta">
+                        <span class="post-category <%= post.category %>"><%= post.category %></span>
+                        <h1><%= post.title %></h1>
+                    </div>
+                    <div class="post-author-info">
+                        <img src="<%= post.author.avatar || '/images/default-avatar.png' %>" alt="<%= post.author.username %>">
+                        <div>
+                            <a href="/users/<%= post.author.username %>"><%= post.author.username %></a>
+                            <% if (post.author.bio) { %>
+                                <p class="author-bio"><%= post.author.bio %></p>
+                            <% } %>
+                            <span class="post-date"><%= new Date(post.createdAt).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-body">
+                    <p><%= post.content %></p>
+                </div>
+
+                <% if (post.tags && post.tags.length > 0) { %>
+                    <div class="post-tags">
+                        <% post.tags.forEach(tag => { %>
+                            <span class="tag">#<%= tag %></span>
+                        <% }); %>
+                    </div>
+                <% } %>
+
+                <div class="post-actions">
+                    <button class="btn-like" data-post-id="<%= post._id %>" data-liked="<%= user && post.likes.includes(user.id) ? 'true' : 'false' %>">
+                        <i class="<%= user && post.likes.includes(user.id) ? 'fas' : 'far' %> fa-heart"></i>
+                        <span class="like-count"><%= post.likes.length %></span> Beğeni
+                    </button>
+                    <span><i class="fas fa-comment"></i> <%= post.comments.length %> Yorum</span>
+                    <span><i class="fas fa-eye"></i> <%= post.viewCount %> Görüntüleme</span>
+                </div>
+
+                <!-- Yorumlar -->
+                <div class="comments-section">
+                    <h3>Yorumlar (<%= post.comments.length %>)</h3>
+                    
+                    <% if (user) { %>
+                        <form action="/posts/<%= post._id %>/comment" method="POST" class="comment-form">
+                            <textarea name="content" placeholder="Yorumunuzu yazın..." required maxlength="1000"></textarea>
+                            <button type="submit" class="btn btn-primary">Yorum Yap</button>
+                        </form>
+                    <% } else { %>
+                        <p class="login-prompt">Yorum yapmak için <a href="/auth/login">giriş yapın</a></p>
+                    <% } %>
+
+                    <div class="comments-list">
+                        <% if (post.comments && post.comments.length > 0) { %>
+                            <% post.comments.forEach(comment => { %>
+                                <div class="comment">
+                                    <img src="<%= comment.user.avatar || '/images/default-avatar.png' %>" alt="<%= comment.user.username %>">
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <a href="/users/<%= comment.user.username %>"><%= comment.user.username %></a>
+                                            <span class="comment-date"><%= new Date(comment.createdAt).toLocaleDateString('tr-TR') %></span>
+                                        </div>
+                                        <p><%= comment.content %></p>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="no-comments">Henüz yorum yapılmamış. İlk yorumu siz yapın!</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+    <script src="/js/main.js"></script>
+</body>
+</html>

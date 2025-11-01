@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İbadet Rehberleri</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-book-open-reader"></i> İbadet Rehberleri</h1>
+                <p style="color: #666;">Adım Adım İbadet Kılavuzları</p>
+            </div>
+
+            <div class="guides-grid">
+                <% if (guides && guides.length > 0) { %>
+                    <% guides.forEach(guide => { %>
+                        <div class="guide-card">
+                            <div class="guide-icon">
+                                <% if (guide.category === 'Namaz') { %>
+                                    <i class="fas fa-praying-hands"></i>
+                                <% } else if (guide.category === 'Abdest') { %>
+                                    <i class="fas fa-hand-sparkles"></i>
+                                <% } else if (guide.category === 'Oruç') { %>
+                                    <i class="fas fa-moon"></i>
+                                <% } else if (guide.category === 'Hac') { %>
+                                    <i class="fas fa-kaaba"></i>
+                                <% } else { %>
+                                    <i class="fas fa-book"></i>
+                                <% } %>
+                            </div>
+                            <h3><%= guide.title %></h3>
+                            <p class="guide-category"><%= guide.category %></p>
+                            <p class="guide-description"><%= guide.description %></p>
+                            
+                            <button class="btn-expand-guide" data-guide-id="<%= guide._id %>">
+                                <i class="fas fa-arrow-down"></i> Adımları Göster
+                            </button>
+                            
+                            <div class="guide-steps" id="steps-<%= guide._id %>" style="display: none;">
+                                <h4><i class="fas fa-list-ol"></i> Adımlar:</h4>
+                                <ol>
+                                    <% guide.steps.forEach(step => { %>
+                                        <li>
+                                            <strong><%= step.title %></strong>
+                                            <p><%= step.description %></p>
+                                            <% if (step.arabic) { %>
+                                                <div class="step-arabic"><%= step.arabic %></div>
+                                            <% } %>
+                                            <% if (step.turkish) { %>
+                                                <div class="step-turkish"><%= step.turkish %></div>
+                                            <% } %>
+                                        </li>
+                                    <% }); %>
+                                </ol>
+                                
+                                <% if (guide.notes && guide.notes.length > 0) { %>
+                                    <div class="guide-notes">
+                                        <h4><i class="fas fa-info-circle"></i> Notlar:</h4>
+                                        <ul>
+                                            <% guide.notes.forEach(note => { %>
+                                                <li><%= note %></li>
+                                            <% }); %>
+                                        </ul>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="no-content">Henüz rehber eklenmemiş.</p>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.btn-expand-guide').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const guideId = this.getAttribute('data-guide-id');
+                    const stepsDiv = document.getElementById(`steps-${guideId}`);
+                    const icon = this.querySelector('i');
+                    
+                    if (stepsDiv.style.display === 'none') {
+                        stepsDiv.style.display = 'block';
+                        icon.classList.remove('fa-arrow-down');
+                        icon.classList.add('fa-arrow-up');
+                        this.innerHTML = '<i class="fas fa-arrow-up"></i> Gizle';
+                    } else {
+                        stepsDiv.style.display = 'none';
+                        icon.classList.remove('fa-arrow-up');
+                        icon.classList.add('fa-arrow-down');
+                        this.innerHTML = '<i class="fas fa-arrow-down"></i> Adımları Göster';
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .guides-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .guide-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .guide-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .guide-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), #1a4620);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .guide-card h3 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .guide-category {
+            text-align: center;
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .guide-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-expand-guide {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .btn-expand-guide:hover {
+            background: #1a4620;
+            transform: scale(1.02);
+        }
+
+        .guide-steps {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            animation: slideDown 0.3s;
+        }
+
+        .guide-steps h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .guide-steps ol {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+
+        .guide-steps ol li {
+            counter-increment: step-counter;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--white);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            position: relative;
+        }
+
+        .guide-steps ol li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -20px;
+            top: 10px;
+            background: var(--accent-color);
+            color: var(--white);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .guide-steps ol li strong {
+            display: block;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .guide-steps ol li p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .step-arabic {
+            direction: rtl;
+            font-size: 1.3rem;
+            color: #2c3e50;
+            padding: 0.8rem;
+            background: #e8f5e9;
+            border-radius: 5px;
+            margin: 0.8rem 0;
+        }
+
+        .step-turkish {
+            color: #666;
+            font-style: italic;
+            padding: 0.5rem;
+            background: #fff3cd;
+            border-radius: 5px;
+        }
+
+        .guide-notes {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fff3cd;
+            border-radius: 8px;
+        }
+
+        .guide-notes h4 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .guide-notes ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .guide-notes ul li {
+            padding: 0.5rem 0;
+            color: #666;
+        }
+
+        .guide-notes ul li::before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</body>
+</html>

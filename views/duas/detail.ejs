@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= dua.title %> - Dini Sohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="dua-detail">
+                <div class="dua-header">
+                    <h1><%= dua.title %></h1>
+                    <span class="dua-category <%= dua.category %>"><%= dua.category %></span>
+                </div>
+
+                <div class="dua-content">
+                    <div class="dua-section">
+                        <h3><i class="fas fa-book-quran"></i> Arapça</h3>
+                        <div class="dua-arabic-text">
+                            <%= dua.arabicText %>
+                        </div>
+                    </div>
+
+                    <div class="dua-section">
+                        <h3><i class="fas fa-language"></i> Okunuşu</h3>
+                        <div class="dua-turkish-text">
+                            <%= dua.turkishText %>
+                        </div>
+                    </div>
+
+                    <div class="dua-section">
+                        <h3><i class="fas fa-info-circle"></i> Anlamı</h3>
+                        <div class="dua-meaning">
+                            <%= dua.meaning %>
+                        </div>
+                    </div>
+
+                    <% if (dua.source) { %>
+                        <div class="dua-section">
+                            <h3><i class="fas fa-book"></i> Kaynak</h3>
+                            <p><%= dua.source %></p>
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="dua-actions">
+                    <button class="btn-favorite" data-dua-id="<%= dua._id %>" data-favorited="<%= user && dua.favorites.includes(user.id) ? 'true' : 'false' %>">
+                        <i class="<%= user && dua.favorites.includes(user.id) ? 'fas' : 'far' %> fa-star"></i>
+                        <span class="favorite-count"><%= dua.favorites.length %></span> Favorilere Ekle
+                    </button>
+                    <span><i class="fas fa-eye"></i> <%= dua.viewCount %> Görüntüleme</span>
+                    <button class="btn-share" onclick="shareUrl()">
+                        <i class="fas fa-share-alt"></i> Paylaş
+                    </button>
+                </div>
+
+                <div class="dua-meta">
+                    <p>Ekleyen: <a href="/users/<%= dua.addedBy.username %>"><%= dua.addedBy.username %></a></p>
+                    <p>Eklenme Tarihi: <%= new Date(dua.createdAt).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+    <script src="/js/main.js"></script>
+    <script>
+        function shareUrl() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '<%= dua.title %>',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link kopyalandı!');
+            }
+        }
+    </script>
+</body>
+</html>

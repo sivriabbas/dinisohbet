@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esma-ül Hüsna - Allah'ın 99 İsmi</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-star-and-crescent"></i> Esma-ül Hüsna</h1>
+                <p style="color: #666;">Allah'ın 99 Güzel İsmi</p>
+            </div>
+
+            <div class="esma-intro">
+                <p>
+                    <i class="fas fa-quote-right"></i>
+                    "Allah'ın en güzel isimleri vardır. O halde O'na o isimlerle dua edin."
+                    <em>(A'raf Suresi, 180)</em>
+                </p>
+            </div>
+
+            <div class="esma-grid">
+                <% if (esmaList && esmaList.length > 0) { %>
+                    <% esmaList.forEach(esma => { %>
+                        <div class="esma-card">
+                            <div class="esma-number"><%= esma.number %></div>
+                            <div class="esma-arabic"><%= esma.arabic %></div>
+                            <div class="esma-turkish"><%= esma.turkish %></div>
+                            <div class="esma-meaning"><%= esma.meaning %></div>
+                            
+                            <% if (esma.benefits) { %>
+                                <button class="btn-expand" data-number="<%= esma.number %>">
+                                    <i class="fas fa-plus"></i> Faydaları Gör
+                                </button>
+                                <div class="esma-benefits" id="benefits-<%= esma.number %>" style="display: none;">
+                                    <h4><i class="fas fa-gift"></i> Faydaları:</h4>
+                                    <p><%= esma.benefits %></p>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="no-content">Esma-ül Hüsna listesi henüz eklenmemiş.</p>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        // Event delegation ile buton tıklamalarını yönet
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.btn-expand').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const number = this.getAttribute('data-number');
+                    const benefitsDiv = document.getElementById(`benefits-${number}`);
+                    const icon = this.querySelector('i');
+                    
+                    if (benefitsDiv.style.display === 'none') {
+                        benefitsDiv.style.display = 'block';
+                        icon.classList.remove('fa-plus');
+                        icon.classList.add('fa-minus');
+                        this.innerHTML = '<i class="fas fa-minus"></i> Gizle';
+                    } else {
+                        benefitsDiv.style.display = 'none';
+                        icon.classList.remove('fa-minus');
+                        icon.classList.add('fa-plus');
+                        this.innerHTML = '<i class="fas fa-plus"></i> Faydaları Gör';
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .esma-intro {
+            background: linear-gradient(135deg, var(--primary-color), #1a4620);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .esma-intro em {
+            display: block;
+            margin-top: 0.5rem;
+            color: var(--accent-color);
+            font-size: 1rem;
+        }
+
+        .esma-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .esma-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s;
+            border-top: 5px solid var(--accent-color);
+        }
+
+        .esma-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .esma-number {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .esma-arabic {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            direction: rtl;
+            font-weight: bold;
+        }
+
+        .esma-turkish {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .esma-meaning {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .btn-expand {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-expand:hover {
+            background: #1a4620;
+            transform: scale(1.05);
+        }
+
+        .esma-benefits {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 8px;
+            text-align: left;
+            animation: slideDown 0.3s;
+        }
+
+        .esma-benefits h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .esma-benefits p {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</body>
+</html>

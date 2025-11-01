@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ana Sayfa - Dini Portal | İslami Bilgiler, Kuran, Hadis, Dualar</title>
+    <meta name="description" content="İslami bilgiler, Kuran-ı Kerim, hadisler, dualar, namaz vakitleri, esma-ül hüsna ve daha fazlası. Kapsamlı İslami portal.">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2c5f2d">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Dini Portal">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/icon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/icon-180x180.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="/css/widgets.css">
+    <link rel="stylesheet" href="/css/themes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-modern">
+            <div class="container">
+                <div class="hero-content">
+                    <h1><i class="fas fa-moon"></i> Bismillahirrahmanirrahim</h1>
+                    <p class="hero-subtitle">İslami bilgilere ulaşın, Kuran okuyun, hadis öğrenin, ibadetlerinizi kolaylaştırın</p>
+                    <div class="hero-search">
+                        <input type="text" placeholder="Kuran'da, Hadislerde veya Dualarda ara..." id="globalSearch">
+                        <button onclick="searchContent()"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hızlı Erişim Kartları -->
+        <section class="quick-access">
+            <div class="container">
+                <div class="quick-cards">
+                    <a href="/quran" class="quick-card quran">
+                        <div class="quick-icon"><i class="fas fa-book-quran"></i></div>
+                        <h3>Kuran-ı Kerim</h3>
+                        <p>114 Sure, Meal ve Tefsir</p>
+                    </a>
+                    <a href="/hadiths" class="quick-card hadith">
+                        <div class="quick-icon"><i class="fas fa-book"></i></div>
+                        <h3>Hadis-i Şerifler</h3>
+                        <p>Kütüb-i Sitte</p>
+                    </a>
+                    <a href="/prayer-times" class="quick-card prayer">
+                        <div class="quick-icon"><i class="fas fa-clock"></i></div>
+                        <h3>Namaz Vakitleri</h3>
+                        <p>Şehir Bazlı Vakit Bilgisi</p>
+                    </a>
+                    <a href="/prayer-times/qibla" class="quick-card qibla">
+                        <div class="quick-icon"><i class="fas fa-compass"></i></div>
+                        <h3>Kıble Yönü</h3>
+                        <p>Pusula ve Harita</p>
+                    </a>
+                    <a href="/duas" class="quick-card dua">
+                        <div class="quick-icon"><i class="fas fa-praying-hands"></i></div>
+                        <h3>Dua Koleksiyonu</h3>
+                        <p>Günlük Dualar</p>
+                    </a>
+                    <a href="/esma" class="quick-card esma">
+                        <div class="quick-icon"><i class="fas fa-star"></i></div>
+                        <h3>Esma-ül Hüsna</h3>
+                        <p>99 İsim-i Şerif</p>
+                    </a>
+                    <a href="/guides" class="quick-card guide">
+                        <div class="quick-icon"><i class="fas fa-hands"></i></div>
+                        <h3>İbadet Rehberi</h3>
+                        <p>Abdest, Namaz, Hac</p>
+                    </a>
+                    <a href="/posts" class="quick-card community">
+                        <div class="quick-icon"><i class="fas fa-users"></i></div>
+                        <h3>Sohbet</h3>
+                        <p>Topluluk Paylaşımları</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Widget Container (Özelleştirilebilir) -->
+        <section class="widgets-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fas fa-th-large"></i> Günlük Takip</h2>
+                    <p class="section-subtitle">İhtiyacınıza göre widget'ları düzenleyin</p>
+                </div>
+                
+                <div id="widgetContainer" class="widgets-container">
+                    <!-- Widgets will be rendered here by JavaScript -->
+                </div>
+
+                <!-- Hidden widget templates -->
+                <div style="display: none;">
+                    <!-- Daily Ayah Widget -->
+                    <div id="daily-ayah" class="widget-template">
+                        <% if (randomAyah) { %>
+                        <div class="widget-header">
+                            <h3 class="widget-title">
+                                <i class="fas fa-book-quran"></i>
+                                Günün Ayeti
+                            </h3>
+                        </div>
+                        <div class="widget-content">
+                            <div class="ayah-arabic"><%= randomAyah.arabic %></div>
+                            <div class="ayah-turkish"><%= randomAyah.turkish %></div>
+                            <span class="ayah-reference">
+                                <%= randomAyah.surahName %> Suresi, <%= randomAyah.ayahNumber %>. Ayet
+                            </span>
+                        </div>
+                        <% } else { %>
+                        <div class="widget-content">
+                            <p>Günün ayeti yükleniyor...</p>
+                        </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Prayer Times Widget -->
+                    <div id="prayer-times" class="widget-template">
+                        <div class="widget-header">
+                            <h3 class="widget-title">
+                                <i class="fas fa-clock"></i>
+                                Namaz Vakitleri
+                            </h3>
+                        </div>
+                        <div class="widget-content">
+                            <div class="prayer-times-grid" id="prayerTimesList">
+                                <div class="prayer-time-row">
+                                    <span>İmsak</span>
+                                    <span class="time">--:--</span>
+                                </div>
+                                <div class="prayer-time-row">
+                                    <span>Güneş</span>
+                                    <span class="time">--:--</span>
+                                </div>
+                                <div class="prayer-time-row">
+                                    <span>Öğle</span>
+                                    <span class="time">--:--</span>
+                                </div>
+                                <div class="prayer-time-row">
+                                    <span>İkindi</span>
+                                    <span class="time">--:--</span>
+                                </div>
+                                <div class="prayer-time-row">
+                                    <span>Akşam</span>
+                                    <span class="time">--:--</span>
+                                </div>
+                                <div class="prayer-time-row">
+                                    <span>Yatsı</span>
+                                    <span class="time">--:--</span>
+                                </div>
+                            </div>
+                            <div class="next-prayer-info">
+                                <small>Sonraki vakit:</small>
+                                <div class="countdown-timer" id="prayerCountdown">--:--:--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Hadith Widget -->
+                    <div id="daily-hadith" class="widget-template">
+                        <% if (randomHadith) { %>
+                        <div class="widget-header">
+                            <h3 class="widget-title">
+                                <i class="fas fa-book"></i>
+                                Günün Hadisi
+                            </h3>
+                        </div>
+                        <div class="widget-content">
+                            <h4><%= randomHadith.title %></h4>
+                            <div class="hadith-turkish">
+                                <%= randomHadith.turkishText.substring(0, 200) %>...
+                            </div>
+                            <span class="hadith-source"><%= randomHadith.source %></span>
+                        </div>
+                        <% } else { %>
+                        <div class="widget-content">
+                            <p>Günün hadisi yükleniyor...</p>
+                        </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Goals Progress Widget -->
+                    <div id="goals-progress" class="widget-template">
+                        <div class="widget-header">
+                            <h3 class="widget-title">
+                                <i class="fas fa-bullseye"></i>
+                                Hedeflerim
+                            </h3>
+                        </div>
+                        <div class="widget-content">
+                            <div class="goals-list" id="goalsProgressList">
+                                <div class="no-goals">
+                                    <i class="fas fa-bullseye"></i>
+                                    <p>Henüz aktif hedef bulunmuyor</p>
+                                    <% if (user) { %>
+                                    <a href="/goals" class="btn btn-sm btn-primary">Hedef Oluştur</a>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weather Widget -->
+                    <div id="weather" class="widget-template">
+                        <div class="widget-header">
+                            <h3 class="widget-title">
+                                <i class="fas fa-cloud-sun"></i>
+                                Hava Durumu
+                            </h3>
+                        </div>
+                        <div class="widget-content">
+                            <div class="weather-info" id="weatherInfo">
+                                <div class="weather-icon">☀️</div>
+                                <div class="weather-temp">--°C</div>
+                                <div class="weather-desc">Yükleniyor...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Posts Widget -->
+                    <div id="recent-posts" class="widget-template">
+                        <div class="widget-header">
+                            <h3 class="widget-title">
+                                <i class="fas fa-comments"></i>
+                                Son Paylaşımlar
+                            </h3>
+                        </div>
+                        <div class="widget-content">
+                            <div class="recent-posts-list">
+                                <% if (posts && posts.length > 0) { %>
+                                    <% posts.slice(0, 3).forEach(post => { %>
+                                    <div class="mini-post" onclick="window.location='/posts/<%= post._id %>'">
+                                        <div class="mini-post-header">
+                                            <div class="mini-post-author">
+                                                <img src="<%= post.author.avatar || '/images/default-avatar.png' %>" alt="<%= post.author.username %>">
+                                                <small><%= post.author.username %></small>
+                                            </div>
+                                            <small><%= new Date(post.createdAt).toLocaleDateString('tr-TR') %></small>
+                                        </div>
+                                        <div class="mini-post-title"><%= post.title %></div>
+                                        <div class="mini-post-excerpt">
+                                            <%= post.content.substring(0, 80) %>...
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                <% } else { %>
+                                    <p style="text-align: center; color: var(--text-secondary);">Henüz paylaşım bulunmuyor</p>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Widget Settings Button -->
+        <button class="widget-settings-btn" onclick="widgetManager.showSettings()" title="Widget Ayarları">
+            <i class="fas fa-cog"></i>
+        </button>
+
+        <!-- Widget Settings Modal -->
+        <div id="widgetSettingsModal" class="widget-settings-modal">
+            <div class="widget-settings-content">
+                <div class="settings-header">
+                    <h3>Widget Ayarları</h3>
+                    <button class="close-settings" onclick="widgetManager.hideSettings()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    Widget'ları sürükleyerek sıralayın veya açıp kapatın
+                </p>
+                <div id="widgetSettingsList" class="widget-settings-list">
+                    <!-- Settings will be rendered here -->
+                </div>
+                <button class="reset-widgets-btn" onclick="if(confirm('Widget düzenini sıfırlamak istediğinize emin misiniz?')) widgetManager.resetLayout()">
+                    <i class="fas fa-undo"></i> Varsayılana Sıfırla
+                </button>
+            </div>
+        </div>
+
+        <!-- Günün Ayeti -->
+        <% if (randomAyah) { %>
+        <section class="daily-content ayah-section">
+            <div class="container">
+                <div class="daily-card">
+                    <div class="daily-header">
+                        <h2><i class="fas fa-book-quran"></i> Günün Ayeti</h2>
+                        <span class="daily-source"><%= randomAyah.surahName %> Suresi, <%= randomAyah.ayahNumber %>. Ayet</span>
+                    </div>
+                    <div class="daily-arabic">
+                        <%= randomAyah.arabic %>
+                    </div>
+                    <div class="daily-turkish">
+                        <%= randomAyah.turkish %>
+                    </div>
+                    <div class="daily-actions">
+                        <a href="/quran/<%= randomAyah.surahNumber %>" class="btn btn-secondary">Tamamını Oku</a>
+                        <button onclick="shareAyah()" class="btn btn-outline"><i class="fas fa-share-alt"></i> Paylaş</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <% } %>
+
+        <!-- Günün Hadisi -->
+        <% if (randomHadith) { %>
+        <section class="daily-content hadith-section">
+            <div class="container">
+                <div class="daily-card">
+                    <div class="daily-header">
+                        <h2><i class="fas fa-book"></i> Günün Hadisi</h2>
+                        <span class="daily-source"><%= randomHadith.source %></span>
+                    </div>
+                    <div class="hadith-content">
+                        <h3><%= randomHadith.title %></h3>
+                        <div class="hadith-arabic">
+                            <%= randomHadith.arabicText.substring(0, 200) %>...
+                        </div>
+                        <div class="hadith-turkish">
+                            <%= randomHadith.turkishText.substring(0, 300) %>...
+                        </div>
+                    </div>
+                    <div class="daily-actions">
+                        <a href="/hadiths/<%= randomHadith._id %>" class="btn btn-secondary">Devamını Oku</a>
+                        <a href="/hadiths" class="btn btn-outline">Tüm Hadisler</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <% } %>
+
+        <!-- Popüler Dualar -->
+        <% if (popularDuas && popularDuas.length > 0) { %>
+        <section class="popular-duas">
+            <div class="container">
+                <h2 class="section-title"><i class="fas fa-praying-hands"></i> Popüler Dualar</h2>
+                <div class="duas-showcase">
+                    <% popularDuas.forEach(dua => { %>
+                        <div class="dua-showcase-card">
+                            <h3><%= dua.title %></h3>
+                            <div class="dua-preview-arabic">
+                                <%= dua.arabicText.substring(0, 100) %>...
+                            </div>
+                            <div class="dua-preview-turkish">
+                                <%= dua.turkishText.substring(0, 100) %>...
+                            </div>
+                            <a href="/duas/<%= dua._id %>" class="btn btn-sm">Oku</a>
+                        </div>
+                    <% }); %>
+                </div>
+                <div class="text-center">
+                    <a href="/duas" class="btn btn-primary btn-lg">Tüm Dualara Göz At</a>
+                </div>
+            </div>
+        </section>
+        <% } %>
+
+        <!-- Esma-ül Hüsna -->
+        <% if (randomEsma) { %>
+        <section class="esma-highlight">
+            <div class="container">
+                <div class="esma-card-featured">
+                    <div class="esma-number"><%= randomEsma.number %></div>
+                    <div class="esma-content">
+                        <h2><i class="fas fa-star"></i> Allah'ın İsimleri - Esma-ül Hüsna</h2>
+                        <div class="esma-arabic"><%= randomEsma.arabic %></div>
+                        <div class="esma-transliteration"><%= randomEsma.transliteration %></div>
+                        <div class="esma-meaning"><strong><%= randomEsma.turkish %>:</strong> <%= randomEsma.meaning %></div>
+                        <div class="esma-actions">
+                            <a href="/esma/<%= randomEsma.number %>" class="btn btn-secondary">Detaylı Bilgi</a>
+                            <a href="/esma" class="btn btn-outline">99 İsmi Gör</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <% } %>
+
+        <!-- Topluluk Paylaşımları -->
+        <% if (posts && posts.length > 0) { %>
+        <section class="community-posts">
+            <div class="container">
+                <h2 class="section-title"><i class="fas fa-users"></i> Topluluktan Son Paylaşımlar</h2>
+                <p class="section-subtitle">Kullanıcılarımızın dini sohbet ve paylaşımları</p>
+                <div class="posts-grid">
+                    <% posts.forEach(post => { %>
+                        <div class="post-card">
+                            <div class="post-header">
+                                <div class="post-author">
+                                    <img src="<%= post.author.avatar || '/images/default-avatar.png' %>" alt="<%= post.author.username %>">
+                                    <div>
+                                        <a href="/users/<%= post.author.username %>"><%= post.author.username %></a>
+                                        <span class="post-date"><%= new Date(post.createdAt).toLocaleDateString('tr-TR') %></span>
+                                    </div>
+                                </div>
+                                <span class="post-category <%= post.category %>"><%= post.category %></span>
+                            </div>
+                            <div class="post-content">
+                                <h3><a href="/posts/<%= post._id %>"><%= post.title %></a></h3>
+                                <p><%= post.content.substring(0, 120) %>...</p>
+                            </div>
+                            <div class="post-footer">
+                                <span><i class="fas fa-heart"></i> <%= post.likes.length %></span>
+                                <span><i class="fas fa-comment"></i> <%= post.comments.length %></span>
+                                <span><i class="fas fa-eye"></i> <%= post.viewCount %></span>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+                <div class="text-center">
+                    <a href="/posts" class="btn btn-primary btn-lg">Tüm Sohbetleri Gör</a>
+                </div>
+            </div>
+        </section>
+        <% } %>
+
+        <!-- İstatistikler -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-book-quran"></i>
+                        <h3>114</h3>
+                        <p>Sure</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-book"></i>
+                        <h3>1000+</h3>
+                        <p>Hadis</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-praying-hands"></i>
+                        <h3>100+</h3>
+                        <p>Dua</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <h3>Sınırsız</h3>
+                        <p>Bilgi Paylaşımı</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/pwa.js"></script>
+    <script src="/js/widgets.js"></script>
+    <script src="/js/themes.js"></script>
+    <script>
+        function searchContent() {
+            const query = document.getElementById('globalSearch').value;
+            if (query.trim()) {
+                window.location.href = `/search?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        document.getElementById('globalSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchContent();
+            }
+        });
+
+        function shareAyah() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Günün Ayeti',
+                    url: window.location.href
+                });
+            } else {
+                alert('Link kopyalandı!');
+                navigator.clipboard.writeText(window.location.href);
+            }
+        }
+    </script>
+</body>
+</html>

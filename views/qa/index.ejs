@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Soru & Cevap - DiniSohbet</title>
+    <%- include('../partials/head') %>
+    <style>
+        .qa-hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .qa-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .qa-filters {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .question-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 1rem;
+        }
+        
+        .vote-box {
+            text-align: center;
+            min-width: 60px;
+        }
+        
+        .vote-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .question-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            background: var(--bg-color);
+        }
+        
+        .badge.answered {
+            background: var(--success-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    
+    <div class="qa-hero">
+        <div class="container">
+            <h1><i class="fas fa-question-circle"></i> Soru & Cevap</h1>
+            <p>Dini sorularınızı sorun, cevaplarını bulun</p>
+            <a href="/qa/new" class="btn btn-primary" style="margin-top: 1rem;">
+                <i class="fas fa-plus"></i> Soru Sor
+            </a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="qa-stats">
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.total %></div>
+                <div>Toplam Soru</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.answered %></div>
+                <div>Cevaplanan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.unanswered %></div>
+                <div>Cevaplanmayan</div>
+            </div>
+        </div>
+        
+        <div class="qa-filters">
+            <select onchange="window.location.href='?sort=' + this.value + '&category=<%= category %>'">
+                <option value="recent" <%= sort === 'recent' ? 'selected' : '' %>>En Yeni</option>
+                <option value="popular" <%= sort === 'popular' ? 'selected' : '' %>>En Popüler</option>
+                <option value="unanswered" <%= sort === 'unanswered' ? 'selected' : '' %>>Cevaplanmayan</option>
+            </select>
+            
+            <select onchange="window.location.href='?category=' + this.value + '&sort=<%= sort %>'">
+                <option value="">Tüm Kategoriler</option>
+                <option value="ibadet" <%= category === 'ibadet' ? 'selected' : '' %>>İbadet</option>
+                <option value="inanc" <%= category === 'inanc' ? 'selected' : '' %>>İnanç</option>
+                <option value="ahlak" <%= category === 'ahlak' ? 'selected' : '' %>>Ahlak</option>
+                <option value="muamelat" <%= category === 'muamelat' ? 'selected' : '' %>>Muamelat</option>
+                <option value="siyer" <%= category === 'siyer' ? 'selected' : '' %>>Siyer</option>
+            </select>
+        </div>
+        
+        <% questions.forEach(question => { %>
+        <div class="question-card" onclick="window.location.href='/qa/<%= question._id %>'">
+            <div class="question-header">
+                <div class="vote-box">
+                    <div class="vote-score"><%= question.upvotes.length - question.downvotes.length %></div>
+                    <div style="font-size: 0.8rem;">oy</div>
+                </div>
+                <div style="flex: 1;">
+                    <h3><%= question.title %></h3>
+                    <p><%= question.content.substring(0, 200) %>...</p>
+                    <div class="question-meta">
+                        <span class="badge"><%= question.category %></span>
+                        <% if (question.bestAnswer) { %>
+                        <span class="badge answered">✓ Cevaplandı</span>
+                        <% } %>
+                        <span><%= question.answers.length %> cevap</span>
+                        <span><%= question.views %> görüntülenme</span>
+                        <span><%= question.author.username %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+    
+    <%- include('../partials/footer') %>
+</body>
+</html>

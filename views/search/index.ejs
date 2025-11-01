@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Arama - DiniSohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="search-page">
+        <!-- Arama Başlığı -->
+        <div class="search-header">
+            <div class="search-icon-bg">
+                <i class="fas fa-search"></i>
+            </div>
+            <h1>Gelişmiş Arama</h1>
+            <p class="search-subtitle">Kuran, Hadis ve Dualar'da arama yapın</p>
+        </div>
+
+        <!-- Arama Formu -->
+        <div class="search-form-container">
+            <form action="/search" method="GET" class="search-form" id="searchForm">
+                <div class="search-input-group">
+                    <i class="fas fa-search search-input-icon"></i>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        id="searchInput"
+                        value="<%= query || '' %>" 
+                        placeholder="Arapça veya Türkçe arama yapın..."
+                        class="search-input"
+                        autocomplete="off"
+                        required
+                    >
+                    <% if (query) { %>
+                    <button type="button" class="clear-search" onclick="clearSearch()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <% } %>
+                </div>
+
+                <div class="search-filters">
+                    <div class="filter-group">
+                        <label>
+                            <input type="radio" name="type" value="all" <%= (!type || type === 'all') ? 'checked' : '' %>>
+                            <span class="filter-btn">
+                                <i class="fas fa-th"></i> Tümü
+                            </span>
+                        </label>
+                        <label>
+                            <input type="radio" name="type" value="quran" <%= type === 'quran' ? 'checked' : '' %>>
+                            <span class="filter-btn">
+                                <i class="fas fa-book-quran"></i> Kuran
+                            </span>
+                        </label>
+                        <label>
+                            <input type="radio" name="type" value="hadith" <%= type === 'hadith' ? 'checked' : '' %>>
+                            <span class="filter-btn">
+                                <i class="fas fa-scroll"></i> Hadis
+                            </span>
+                        </label>
+                        <label>
+                            <input type="radio" name="type" value="dua" <%= type === 'dua' ? 'checked' : '' %>>
+                            <span class="filter-btn">
+                                <i class="fas fa-hands-praying"></i> Dua
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="search-submit-btn">
+                    <i class="fas fa-search"></i> Ara
+                </button>
+            </form>
+
+            <!-- Arama Geçmişi -->
+            <div class="search-history" id="searchHistory" style="display: none;">
+                <div class="history-header">
+                    <h3><i class="fas fa-history"></i> Son Aramalar</h3>
+                    <button onclick="clearHistory()" class="clear-history-btn">
+                        <i class="fas fa-trash"></i> Temizle
+                    </button>
+                </div>
+                <div class="history-items" id="historyItems"></div>
+            </div>
+
+            <!-- Popüler Aramalar -->
+            <div class="popular-searches">
+                <h3><i class="fas fa-fire"></i> Popüler Aramalar</h3>
+                <div class="popular-tags">
+                    <a href="/search?q=namaz&type=all" class="popular-tag">namaz</a>
+                    <a href="/search?q=sabır&type=all" class="popular-tag">sabır</a>
+                    <a href="/search?q=rahmet&type=all" class="popular-tag">rahmet</a>
+                    <a href="/search?q=tevbe&type=all" class="popular-tag">tevbe</a>
+                    <a href="/search?q=ilim&type=all" class="popular-tag">ilim</a>
+                    <a href="/search?q=sadaka&type=all" class="popular-tag">sadaka</a>
+                    <a href="/search?q=cennet&type=all" class="popular-tag">cennet</a>
+                    <a href="/search?q=dua&type=all" class="popular-tag">dua</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arama Sonuçları -->
+        <% if (results !== null && results !== undefined) { %>
+        <div class="search-results">
+            <div class="results-header">
+                <h2>
+                    <i class="fas fa-list"></i> 
+                    Arama Sonuçları
+                    <% if (totalResults !== undefined) { %>
+                    <span class="results-count">(<%= totalResults %> sonuç)</span>
+                    <% } %>
+                </h2>
+                <p class="search-query">"<%= query %>" için sonuçlar</p>
+            </div>
+
+            <!-- Kuran Sonuçları -->
+            <% if (results.quran && results.quran.length > 0) { %>
+            <div class="result-section">
+                <h3 class="section-title">
+                    <i class="fas fa-book-quran"></i> 
+                    Kuran-ı Kerim 
+                    <span class="section-count">(<%= results.quran.length %>)</span>
+                </h3>
+                <div class="result-items">
+                    <% results.quran.forEach(function(ayah) { %>
+                    <div class="result-card quran-result">
+                        <div class="result-header">
+                            <span class="result-badge quran-badge">
+                                <i class="fas fa-book-quran"></i> Kuran
+                            </span>
+                            <span class="result-location">
+                                <%= ayah.surahName %> Suresi, Ayet <%= ayah.ayahNumber %>
+                            </span>
+                        </div>
+                        <div class="result-content">
+                            <p class="result-arabic" dir="rtl"><%= ayah.arabic %></p>
+                            <p class="result-turkish"><%- ayah.highlighted %></p>
+                            <% if (ayah.transliteration) { %>
+                            <p class="result-translit"><%= ayah.transliteration %></p>
+                            <% } %>
+                        </div>
+                        <div class="result-actions">
+                            <a href="/quran/<%= ayah.surahNumber %>#ayah-<%= ayah.ayahNumber %>" class="result-link">
+                                <i class="fas fa-external-link-alt"></i> Ayete Git
+                            </a>
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Hadis Sonuçları -->
+            <% if (results.hadiths && results.hadiths.length > 0) { %>
+            <div class="result-section">
+                <h3 class="section-title">
+                    <i class="fas fa-scroll"></i> 
+                    Hadis-i Şerifler 
+                    <span class="section-count">(<%= results.hadiths.length %>)</span>
+                </h3>
+                <div class="result-items">
+                    <% results.hadiths.forEach(function(hadith) { %>
+                    <div class="result-card hadith-result">
+                        <div class="result-header">
+                            <span class="result-badge hadith-badge">
+                                <i class="fas fa-scroll"></i> Hadis
+                            </span>
+                            <span class="result-location">
+                                <%= hadith.source %> 
+                                <% if (hadith.bookNumber) { %>
+                                - Kitap <%= hadith.bookNumber %>
+                                <% } %>
+                                <% if (hadith.hadithNumber) { %>
+                                / Hadis <%= hadith.hadithNumber %>
+                                <% } %>
+                            </span>
+                        </div>
+                        <div class="result-content">
+                            <h4 class="result-title"><%= hadith.title %></h4>
+                            <% if (hadith.arabicText) { %>
+                            <p class="result-arabic" dir="rtl"><%= hadith.arabicText %></p>
+                            <% } %>
+                            <p class="result-turkish"><%- hadith.highlighted %></p>
+                        </div>
+                        <div class="result-actions">
+                            <a href="/hadiths/<%= hadith._id %>" class="result-link">
+                                <i class="fas fa-external-link-alt"></i> Hadise Git
+                            </a>
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Dua Sonuçları -->
+            <% if (results.duas && results.duas.length > 0) { %>
+            <div class="result-section">
+                <h3 class="section-title">
+                    <i class="fas fa-hands-praying"></i> 
+                    Dualar 
+                    <span class="section-count">(<%= results.duas.length %>)</span>
+                </h3>
+                <div class="result-items">
+                    <% results.duas.forEach(function(dua) { %>
+                    <div class="result-card dua-result">
+                        <div class="result-header">
+                            <span class="result-badge dua-badge">
+                                <i class="fas fa-hands-praying"></i> Dua
+                            </span>
+                            <% if (dua.category) { %>
+                            <span class="result-category"><%= dua.category %></span>
+                            <% } %>
+                        </div>
+                        <div class="result-content">
+                            <h4 class="result-title"><%= dua.title %></h4>
+                            <% if (dua.arabic) { %>
+                            <p class="result-arabic" dir="rtl"><%= dua.arabic %></p>
+                            <% } %>
+                            <p class="result-turkish"><%- dua.highlighted %></p>
+                            <% if (dua.transliteration) { %>
+                            <p class="result-translit"><%= dua.transliteration %></p>
+                            <% } %>
+                        </div>
+                        <div class="result-actions">
+                            <a href="/duas/<%= dua._id %>" class="result-link">
+                                <i class="fas fa-external-link-alt"></i> Duaya Git
+                            </a>
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Sonuç Bulunamadı -->
+            <% if (totalResults === 0) { %>
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>Sonuç Bulunamadı</h3>
+                <p>"<%= query %>" için hiçbir sonuç bulunamadı.</p>
+                <div class="search-tips">
+                    <h4>Arama İpuçları:</h4>
+                    <ul>
+                        <li>Farklı kelimeler deneyin</li>
+                        <li>Daha genel terimler kullanın</li>
+                        <li>Yazım hatalarını kontrol edin</li>
+                        <li>Arapça veya Türkçe aramayı deneyin</li>
+                    </ul>
+                </div>
+            </div>
+            <% } %>
+        </div>
+        <% } %>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        // Arama geçmişi yönetimi
+        const MAX_HISTORY = 10;
+
+        // Sayfa yüklendiğinde geçmişi göster
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSearchHistory();
+            
+            // Input focus olduğunda geçmişi göster
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('focus', function() {
+                const history = getSearchHistory();
+                if (history.length > 0) {
+                    document.getElementById('searchHistory').style.display = 'block';
+                }
+            });
+
+            // Sayfa tıklandığında geçmişi gizle
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-history') && !e.target.closest('#searchInput')) {
+                    document.getElementById('searchHistory').style.display = 'none';
+                }
+            });
+        });
+
+        // Arama geçmişini localStorage'dan al
+        function getSearchHistory() {
+            const history = localStorage.getItem('searchHistory');
+            return history ? JSON.parse(history) : [];
+        }
+
+        // Arama geçmişine ekle
+        function addToHistory(query, type) {
+            if (!query) return;
+            
+            let history = getSearchHistory();
+            
+            // Aynı aramayı tekrar ekleme
+            history = history.filter(item => item.query !== query || item.type !== type);
+            
+            // Yeni aramayı başa ekle
+            history.unshift({
+                query: query,
+                type: type,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Maksimum sayıyı aşma
+            if (history.length > MAX_HISTORY) {
+                history = history.slice(0, MAX_HISTORY);
+            }
+            
+            localStorage.setItem('searchHistory', JSON.stringify(history));
+        }
+
+        // Arama geçmişini yükle ve göster
+        function loadSearchHistory() {
+            const history = getSearchHistory();
+            const historyItems = document.getElementById('historyItems');
+            
+            if (history.length === 0) {
+                document.getElementById('searchHistory').style.display = 'none';
+                return;
+            }
+            
+            historyItems.innerHTML = history.map(item => `
+                <a href="/search?q=${encodeURIComponent(item.query)}&type=${item.type}" class="history-item">
+                    <i class="fas fa-history"></i>
+                    <span class="history-query">${escapeHtml(item.query)}</span>
+                    <span class="history-type">${getTypeLabel(item.type)}</span>
+                    <span class="history-time">${getTimeAgo(item.timestamp)}</span>
+                </a>
+            `).join('');
+        }
+
+        // Arama geçmişini temizle
+        function clearHistory() {
+            localStorage.removeItem('searchHistory');
+            document.getElementById('searchHistory').style.display = 'none';
+            document.getElementById('historyItems').innerHTML = '';
+        }
+
+        // Aramayı temizle
+        function clearSearch() {
+            window.location.href = '/search';
+        }
+
+        // Form submit edildiğinde geçmişe ekle
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            const query = document.getElementById('searchInput').value.trim();
+            const type = document.querySelector('input[name="type"]:checked').value;
+            
+            if (query) {
+                addToHistory(query, type);
+            }
+        });
+
+        // Tip etiketini al
+        function getTypeLabel(type) {
+            const labels = {
+                'all': 'Tümü',
+                'quran': 'Kuran',
+                'hadith': 'Hadis',
+                'dua': 'Dua'
+            };
+            return labels[type] || type;
+        }
+
+        // Zaman farkını hesapla
+        function getTimeAgo(timestamp) {
+            const now = new Date();
+            const past = new Date(timestamp);
+            const diffMs = now - past;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) return 'Az önce';
+            if (diffMins < 60) return diffMins + ' dk önce';
+            
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours < 24) return diffHours + ' sa önce';
+            
+            const diffDays = Math.floor(diffHours / 24);
+            return diffDays + ' gün önce';
+        }
+
+        // HTML escape
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Klavye kısayolları
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + K = Arama odakla
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+    </script>
+
+    <style>
+        .search-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Başlık */
+        .search-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .search-icon-bg {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-icon-bg i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .search-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Arama Formu */
+        .search-form-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .search-input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .clear-search:hover {
+            color: var(--text-primary);
+        }
+
+        /* Filtreler */
+        .search-filters {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group label {
+            cursor: pointer;
+        }
+
+        .filter-group input[type="radio"] {
+            display: none;
+        }
+
+        .filter-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .filter-group input[type="radio"]:checked + .filter-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn i {
+            margin-right: 0.5rem;
+        }
+
+        /* Arama Butonu */
+        .search-submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-submit-btn i {
+            margin-right: 0.5rem;
+        }
+
+        /* Arama Geçmişi */
+        .search-history {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-header h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .clear-history-btn {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .clear-history-btn:hover {
+            color: #c0392b;
+        }
+
+        .history-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: var(--hover-bg);
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .history-item i {
+            color: var(--text-secondary);
+        }
+
+        .history-query {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .history-type {
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+
+        .history-time {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Popüler Aramalar */
+        .popular-searches {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .popular-searches h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .popular-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .popular-tag {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(245, 87, 108, 0.2);
+        }
+
+        .popular-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        /* Sonuç Başlığı */
+        .results-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .results-header h2 {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .results-count {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+
+        .search-query {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Sonuç Bölümleri */
+        .result-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-count {
+            color: var(--text-secondary);
+            font-weight: normal;
+            font-size: 1.2rem;
+        }
+
+        /* Sonuç Kartları */
+        .result-items {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .quran-result {
+            border-left-color: #3498db;
+        }
+
+        .hadith-result {
+            border-left-color: #e74c3c;
+        }
+
+        .dua-result {
+            border-left-color: #2ecc71;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .result-badge {
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .quran-badge {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .hadith-badge {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .dua-badge {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .result-location {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .result-category {
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .result-content {
+            margin-bottom: 1rem;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .result-arabic {
+            font-family: 'Amiri', 'Traditional Arabic', serif;
+            font-size: 1.5rem;
+            line-height: 2;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            padding: 1rem;
+            background: var(--bg-color);
+            border-radius: 8px;
+        }
+
+        .result-turkish {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .result-turkish mark {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .result-translit {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .result-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .result-link:hover {
+            background: var(--accent-hover);
+            transform: translateX(3px);
+        }
+
+        /* Sonuç Bulunamadı */
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .no-results i {
+            font-size: 4rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .no-results h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .no-results p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-tips {
+            text-align: left;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            background: var(--bg-color);
+            border-radius: 10px;
+        }
+
+        .search-tips h4 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .search-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .search-tips li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .search-tips li:before {
+            content: "💡 ";
+            margin-right: 0.5rem;
+        }
+
+        /* Dark Mode */
+        body.dark-mode .search-icon-bg {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        body.dark-mode .result-arabic {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .result-turkish mark {
+            background: rgba(253, 203, 110, 0.3);
+            color: #fdcb6e;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-header h1 {
+                font-size: 2rem;
+            }
+
+            .search-icon-bg {
+                width: 60px;
+                height: 60px;
+            }
+
+            .search-icon-bg i {
+                font-size: 2rem;
+            }
+
+            .filter-group {
+                flex-direction: column;
+            }
+
+            .filter-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .result-arabic {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</body>
+</html>

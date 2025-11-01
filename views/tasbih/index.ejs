@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijital Tesbih - DiniSohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="tasbih-page">
+        <!-- Başlık -->
+        <div class="tasbih-header">
+            <div class="header-icon-bg">
+                <i class="fas fa-moon"></i>
+            </div>
+            <h1>Dijital Tesbih</h1>
+            <p class="tasbih-subtitle">Zikirlerinizi sayın ve takip edin</p>
+        </div>
+
+        <div class="container">
+            <!-- Ana Sayaç Bölümü -->
+            <div class="counter-section">
+                <!-- Seçili Zikir Metni -->
+                <div class="current-dhikr">
+                    <h2 id="dhikrText">سُبْحَانَ اللهِ</h2>
+                    <p id="dhikrMeaning">Subhanallah - Allah'ı tespih ederim</p>
+                </div>
+
+                <!-- Ana Sayaç Göstergesi -->
+                <div class="counter-display">
+                    <div class="counter-ring">
+                        <svg class="progress-ring" width="300" height="300">
+                            <circle class="progress-ring-bg" cx="150" cy="150" r="140" />
+                            <circle class="progress-ring-circle" cx="150" cy="150" r="140" />
+                        </svg>
+                        <div class="counter-content">
+                            <div class="count-display" id="countDisplay">0</div>
+                            <div class="target-display">/ <span id="targetDisplay">33</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- İlerleme Durumu -->
+                <div class="progress-status">
+                    <div class="status-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Tur: <strong id="roundDisplay">0</strong></span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-infinity"></i>
+                        <span>Toplam: <strong id="totalDisplay">0</strong></span>
+                    </div>
+                </div>
+
+                <!-- Ana Buton -->
+                <button class="count-button" id="countButton" onclick="incrementCounter()">
+                    <div class="ripple"></div>
+                    <i class="fas fa-hand-point-up"></i>
+                    <span>TIKLA</span>
+                </button>
+
+                <!-- Kontrol Butonları -->
+                <div class="control-buttons">
+                    <button class="control-btn reset-btn" onclick="resetCounter()">
+                        <i class="fas fa-redo"></i> Sıfırla
+                    </button>
+                    <button class="control-btn target-btn" onclick="showTargetModal()">
+                        <i class="fas fa-bullseye"></i> Hedef Ayarla
+                    </button>
+                    <button class="control-btn vibrate-btn" onclick="toggleVibration()" id="vibrateBtn">
+                        <i class="fas fa-mobile-screen"></i> Titreşim
+                    </button>
+                    <button class="control-btn sound-btn" onclick="toggleSound()" id="soundBtn">
+                        <i class="fas fa-volume-high"></i> Ses
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hazır Zikirler -->
+            <div class="preset-dhikr-section">
+                <h3><i class="fas fa-list"></i> Hazır Zikirler</h3>
+                <div class="dhikr-presets">
+                    <div class="dhikr-card active" onclick="selectDhikr('subhanallah', 'سُبْحَانَ اللهِ', 'Subhanallah - Allah\'ı tespih ederim', 33)">
+                        <div class="dhikr-arabic">سُبْحَانَ اللهِ</div>
+                        <div class="dhikr-tr">Subhanallah</div>
+                        <div class="dhikr-count">33 tekrar</div>
+                    </div>
+
+                    <div class="dhikr-card" onclick="selectDhikr('alhamdulillah', 'الْحَمْدُ لِلّهِ', 'Elhamdülillah - Allah\'a hamd olsun', 33)">
+                        <div class="dhikr-arabic">الْحَمْدُ لِلّهِ</div>
+                        <div class="dhikr-tr">Elhamdülillah</div>
+                        <div class="dhikr-count">33 tekrar</div>
+                    </div>
+
+                    <div class="dhikr-card" onclick="selectDhikr('allahu-akbar', 'اللّهُ أكْبَرُ', 'Allahu Ekber - Allah en büyüktür', 34)">
+                        <div class="dhikr-arabic">اللّهُ أكْبَرُ</div>
+                        <div class="dhikr-tr">Allahu Ekber</div>
+                        <div class="dhikr-count">34 tekrar</div>
+                    </div>
+
+                    <div class="dhikr-card" onclick="selectDhikr('la-ilaha', 'لَا إِلَٰهَ إِلَّا ٱللَّٰهُ', 'La ilahe illallah - Allah\'tan başka ilah yoktur', 100)">
+                        <div class="dhikr-arabic">لَا إِلَٰهَ إِلَّا ٱللَّٰهُ</div>
+                        <div class="dhikr-tr">La ilahe illallah</div>
+                        <div class="dhikr-count">100 tekrar</div>
+                    </div>
+
+                    <div class="dhikr-card" onclick="selectDhikr('astaghfirullah', 'أَسْتَغْفِرُ اللّهَ', 'Estağfirullah - Allah\'tan bağışlanma dilerim', 100)">
+                        <div class="dhikr-arabic">أَسْتَغْفِرُ اللّهَ</div>
+                        <div class="dhikr-tr">Estağfirullah</div>
+                        <div class="dhikr-count">100 tekrar</div>
+                    </div>
+
+                    <div class="dhikr-card" onclick="selectDhikr('salawat', 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ', 'Salavat - Hz. Muhammed\'e salat ve selam', 100)">
+                        <div class="dhikr-arabic">اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ</div>
+                        <div class="dhikr-tr">Allahumme salli ala Muhammed</div>
+                        <div class="dhikr-count">100 tekrar</div>
+                    </div>
+
+                    <div class="dhikr-card" onclick="selectDhikr('la-havle', 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّهِ', 'Tevhid Kelimesi', 100)">
+                        <div class="dhikr-arabic">لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّهِ</div>
+                        <div class="dhikr-tr">La havle ve la kuvvete illa billah</div>
+                        <div class="dhikr-count">100 tekrar</div>
+                    </div>
+
+                    <div class="dhikr-card" onclick="selectDhikr('custom', '', 'Özel Zikir', 0)">
+                        <div class="dhikr-custom">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="dhikr-tr">Özel Zikir</div>
+                        <div class="dhikr-count">Kendin belirle</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İstatistikler -->
+            <div class="stats-section">
+                <h3><i class="fas fa-chart-line"></i> İstatistikler</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon today">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4 id="todayCount">0</h4>
+                            <p>Bugün</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon week">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4 id="weekCount">0</h4>
+                            <p>Bu Hafta</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon total">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4 id="allTimeCount">0</h4>
+                            <p>Toplam</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon streak">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4 id="streakCount">0</h4>
+                            <p>Gün Serisi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hedef Modal -->
+        <div class="modal" id="targetModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Hedef Ayarla</h3>
+                    <button class="close-modal" onclick="closeTargetModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label>Hedef Sayı:</label>
+                    <input type="number" id="targetInput" value="33" min="1" max="10000">
+                    <div class="quick-targets">
+                        <button onclick="setQuickTarget(33)">33</button>
+                        <button onclick="setQuickTarget(100)">100</button>
+                        <button onclick="setQuickTarget(300)">300</button>
+                        <button onclick="setQuickTarget(1000)">1000</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-save" onclick="saveTarget()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Özel Zikir Modal -->
+        <div class="modal" id="customModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Özel Zikir Ekle</h3>
+                    <button class="close-modal" onclick="closeCustomModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label>Arapça Metin:</label>
+                    <input type="text" id="customArabic" placeholder="Arapça zikir metni">
+                    
+                    <label>Türkçe Anlamı:</label>
+                    <input type="text" id="customMeaning" placeholder="Zikrin anlamı">
+                    
+                    <label>Hedef Sayı:</label>
+                    <input type="number" id="customTarget" value="33" min="1">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-save" onclick="saveCustomDhikr()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        // LocalStorage keys
+        const COUNTER_KEY = 'tasbih_counter';
+        const TOTAL_KEY = 'tasbih_total';
+        const ROUND_KEY = 'tasbih_round';
+        const TARGET_KEY = 'tasbih_target';
+        const STATS_KEY = 'tasbih_stats';
+        const SETTINGS_KEY = 'tasbih_settings';
+        const CURRENT_DHIKR_KEY = 'tasbih_current';
+
+        // State
+        let counter = parseInt(localStorage.getItem(COUNTER_KEY) || '0');
+        let total = parseInt(localStorage.getItem(TOTAL_KEY) || '0');
+        let round = parseInt(localStorage.getItem(ROUND_KEY) || '0');
+        let target = parseInt(localStorage.getItem(TARGET_KEY) || '33');
+        let currentDhikr = JSON.parse(localStorage.getItem(CURRENT_DHIKR_KEY) || '{"id":"subhanallah","arabic":"سُبْحَانَ اللهِ","meaning":"Subhanallah - Allah\'ı tespih ederim"}');
+        
+        // Settings
+        let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{"vibration":true,"sound":true}');
+        
+        // Stats
+        let stats = JSON.parse(localStorage.getItem(STATS_KEY) || '{"today":0,"week":0,"allTime":0,"lastDate":"","streak":0}');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDisplay();
+            updateStats();
+            updateSettingsUI();
+            checkStreak();
+        });
+
+        function incrementCounter() {
+            counter++;
+            total++;
+            
+            // Update today's count
+            const today = new Date().toDateString();
+            if (stats.lastDate !== today) {
+                stats.today = 0;
+                stats.lastDate = today;
+            }
+            stats.today++;
+            stats.week++;
+            stats.allTime++;
+
+            // Check if target reached
+            if (counter >= target) {
+                counter = 0;
+                round++;
+                targetReached();
+            }
+
+            // Vibration
+            if (settings.vibration && 'vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+
+            // Sound
+            if (settings.sound) {
+                playClickSound();
+            }
+
+            saveData();
+            updateDisplay();
+            animateButton();
+        }
+
+        function resetCounter() {
+            if (confirm('Sayacı sıfırlamak istediğinizden emin misiniz?')) {
+                counter = 0;
+                round = 0;
+                saveData();
+                updateDisplay();
+            }
+        }
+
+        function targetReached() {
+            // Celebration effect
+            if (settings.vibration && 'vibrate' in navigator) {
+                navigator.vibrate([200, 100, 200]);
+            }
+            
+            if (settings.sound) {
+                playSuccessSound();
+            }
+
+            // Show notification
+            showNotification('🎉 Hedef Tamamlandı!', `${target} zikir tamamlandı. Mükemmel!`);
+        }
+
+        function updateDisplay() {
+            document.getElementById('countDisplay').textContent = counter;
+            document.getElementById('targetDisplay').textContent = target;
+            document.getElementById('roundDisplay').textContent = round;
+            document.getElementById('totalDisplay').textContent = total.toLocaleString('tr-TR');
+
+            // Update progress ring
+            const progress = (counter / target) * 100;
+            const circle = document.querySelector('.progress-ring-circle');
+            const radius = 140;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (progress / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+
+            // Update dhikr text
+            document.getElementById('dhikrText').textContent = currentDhikr.arabic;
+            document.getElementById('dhikrMeaning').textContent = currentDhikr.meaning;
+        }
+
+        function updateStats() {
+            document.getElementById('todayCount').textContent = stats.today.toLocaleString('tr-TR');
+            document.getElementById('weekCount').textContent = stats.week.toLocaleString('tr-TR');
+            document.getElementById('allTimeCount').textContent = stats.allTime.toLocaleString('tr-TR');
+            document.getElementById('streakCount').textContent = stats.streak;
+        }
+
+        function checkStreak() {
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            
+            if (stats.lastDate === today) {
+                // Already counted today
+            } else if (stats.lastDate === yesterday) {
+                // Streak continues
+                if (stats.today > 0) {
+                    stats.streak++;
+                }
+            } else {
+                // Streak broken
+                stats.streak = 0;
+            }
+            
+            saveData();
+        }
+
+        function selectDhikr(id, arabic, meaning, defaultTarget) {
+            if (id === 'custom') {
+                showCustomModal();
+                return;
+            }
+
+            // Remove active class from all cards
+            document.querySelectorAll('.dhikr-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Add active class to selected card
+            event.target.closest('.dhikr-card').classList.add('active');
+
+            currentDhikr = { id, arabic, meaning };
+            target = defaultTarget;
+            counter = 0;
+            round = 0;
+
+            saveData();
+            updateDisplay();
+        }
+
+        function toggleVibration() {
+            settings.vibration = !settings.vibration;
+            updateSettingsUI();
+            saveData();
+            
+            if (settings.vibration && 'vibrate' in navigator) {
+                navigator.vibrate(100);
+            }
+        }
+
+        function toggleSound() {
+            settings.sound = !settings.sound;
+            updateSettingsUI();
+            saveData();
+        }
+
+        function updateSettingsUI() {
+            const vibrateBtn = document.getElementById('vibrateBtn');
+            const soundBtn = document.getElementById('soundBtn');
+
+            if (settings.vibration) {
+                vibrateBtn.classList.add('active');
+            } else {
+                vibrateBtn.classList.remove('active');
+            }
+
+            if (settings.sound) {
+                soundBtn.classList.add('active');
+            } else {
+                soundBtn.classList.remove('active');
+            }
+        }
+
+        function showTargetModal() {
+            document.getElementById('targetInput').value = target;
+            document.getElementById('targetModal').style.display = 'flex';
+        }
+
+        function closeTargetModal() {
+            document.getElementById('targetModal').style.display = 'none';
+        }
+
+        function setQuickTarget(value) {
+            document.getElementById('targetInput').value = value;
+        }
+
+        function saveTarget() {
+            const newTarget = parseInt(document.getElementById('targetInput').value);
+            if (newTarget > 0 && newTarget <= 10000) {
+                target = newTarget;
+                counter = 0;
+                saveData();
+                updateDisplay();
+                closeTargetModal();
+            }
+        }
+
+        function showCustomModal() {
+            document.getElementById('customModal').style.display = 'flex';
+        }
+
+        function closeCustomModal() {
+            document.getElementById('customModal').style.display = 'none';
+        }
+
+        function saveCustomDhikr() {
+            const arabic = document.getElementById('customArabic').value.trim();
+            const meaning = document.getElementById('customMeaning').value.trim();
+            const customTarget = parseInt(document.getElementById('customTarget').value);
+
+            if (arabic && meaning && customTarget > 0) {
+                currentDhikr = { id: 'custom', arabic, meaning };
+                target = customTarget;
+                counter = 0;
+                round = 0;
+                
+                saveData();
+                updateDisplay();
+                closeCustomModal();
+            } else {
+                alert('Lütfen tüm alanları doldurun!');
+            }
+        }
+
+        function animateButton() {
+            const button = document.getElementById('countButton');
+            button.classList.add('clicked');
+            setTimeout(() => button.classList.remove('clicked'), 200);
+        }
+
+        function playClickSound() {
+            // Simple beep sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function playSuccessSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523.25, 659.25, 783.99]; // C, E, G
+            
+            notes.forEach((freq, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                }, index * 100);
+            });
+        }
+
+        function showNotification(title, message) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, { body: message, icon: '/icon-192x192.png' });
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem(COUNTER_KEY, counter);
+            localStorage.setItem(TOTAL_KEY, total);
+            localStorage.setItem(ROUND_KEY, round);
+            localStorage.setItem(TARGET_KEY, target);
+            localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            localStorage.setItem(CURRENT_DHIKR_KEY, JSON.stringify(currentDhikr));
+            updateStats();
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                incrementCounter();
+            } else if (e.code === 'KeyR' && e.ctrlKey) {
+                e.preventDefault();
+                resetCounter();
+            }
+        });
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
+    </script>
+
+    <style>
+        .tasbih-page {
+            min-height: 100vh;
+            background: var(--bg-color);
+            padding: 2rem 0;
+        }
+
+        .tasbih-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-icon-bg {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .header-icon-bg i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .tasbih-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tasbih-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Counter Section */
+        .counter-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .current-dhikr h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .current-dhikr p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .counter-display {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .counter-ring {
+            position: relative;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: var(--bg-color);
+            stroke-width: 15;
+        }
+
+        .progress-ring-circle {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 15;
+            stroke-linecap: round;
+            stroke-dasharray: 879.646;
+            stroke-dashoffset: 879.646;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+
+        .counter-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .count-display {
+            font-size: 4rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .target-display {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-status {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .status-item i {
+            color: #667eea;
+        }
+
+        .status-item strong {
+            color: var(--text-primary);
+        }
+
+        /* Count Button */
+        .count-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem auto;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .count-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6);
+        }
+
+        .count-button:active,
+        .count-button.clicked {
+            transform: scale(0.95);
+        }
+
+        .count-button i {
+            font-size: 3rem;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Control Buttons */
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .control-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .control-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Preset Dhikr */
+        .preset-dhikr-section {
+            margin-bottom: 2rem;
+        }
+
+        .preset-dhikr-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .dhikr-presets {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .dhikr-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .dhikr-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+
+        .dhikr-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .dhikr-arabic {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .dhikr-tr {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .dhikr-count {
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .dhikr-custom {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Stats */
+        .stats-section {
+            margin-bottom: 2rem;
+        }
+
+        .stats-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.today { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-icon.week { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .stat-icon.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-icon.streak { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+
+        .stat-content h4 {
+            font-size: 2rem;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .stat-content p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-body label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .modal-body input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .quick-targets {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-targets button {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .quick-targets button:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            text-align: right;
+        }
+
+        .btn-save {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* SVG Gradient */
+        svg defs {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tasbih-header h1 {
+                font-size: 2rem;
+            }
+
+            .count-button {
+                width: 150px;
+                height: 150px;
+            }
+
+            .count-display {
+                font-size: 3rem;
+            }
+
+            .current-dhikr h2 {
+                font-size: 2rem;
+            }
+
+            .progress-status {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .dhikr-presets {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <!-- SVG Gradient Definition -->
+    <svg style="position: absolute; width: 0; height: 0;">
+        <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+</body>
+</html>

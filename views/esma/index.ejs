@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esma-ül Hüsna - Allah'ın 99 İsmi</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="esma-page">
+        <!-- Başlık -->
+        <div class="esma-header">
+            <div class="header-icon-bg">
+                <i class="fas fa-star-and-crescent"></i>
+            </div>
+            <h1>Esma-ül Hüsna</h1>
+            <p class="esma-subtitle">Allah'ın 99 Güzel İsmi</p>
+            <div class="esma-verse">
+                <i class="fas fa-quote-right"></i>
+                "Allah'ın en güzel isimleri vardır. O halde O'na o isimlerle dua edin."
+                <span>(A'raf Suresi, 180)</span>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Filtreler ve Kontroller -->
+            <div class="controls-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="İsim veya anlam ara...">
+                </div>
+
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="playAll()">
+                        <i class="fas fa-play-circle"></i> Hepsini Dinle
+                    </button>
+                    <button class="control-btn" onclick="toggleFavorites()">
+                        <i class="fas fa-heart"></i> Favoriler (<span id="favoriteCount">0</span>)
+                    </button>
+                    <button class="control-btn" onclick="resetProgress()">
+                        <i class="fas fa-redo"></i> Sıfırla
+                    </button>
+                </div>
+            </div>
+
+            <!-- İlerleme Çubuğu -->
+            <div class="progress-section">
+                <div class="progress-info">
+                    <span><i class="fas fa-check-circle"></i> Dinlenen: <strong id="listenedCount">0</strong>/99</span>
+                    <span><i class="fas fa-percent"></i> İlerleme: <strong id="progressPercent">0</strong>%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <!-- Audio Player (Sticky) -->
+            <div class="audio-player-sticky" id="audioPlayer" style="display: none;">
+                <div class="player-info">
+                    <div class="player-number" id="playerNumber">1</div>
+                    <div class="player-text">
+                        <div class="player-arabic" id="playerArabic">الرَّحْمَنُ</div>
+                        <div class="player-turkish" id="playerTurkish">Er-Rahman</div>
+                    </div>
+                </div>
+                <div class="player-controls">
+                    <button class="player-btn" onclick="previousName()">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="player-btn play-pause" id="playPauseBtn" onclick="togglePlay()">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="player-btn" onclick="nextName()">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                    <button class="player-btn" onclick="toggleRepeat()">
+                        <i class="fas fa-repeat" id="repeatIcon"></i>
+                    </button>
+                </div>
+                <button class="player-close" onclick="closePlayer()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <audio id="audioElement"></audio>
+            </div>
+
+            <!-- Esma Grid -->
+            <div class="esma-grid" id="esmaGrid">
+                <% if (esmas && esmas.length > 0) { %>
+                    <% esmas.forEach(esma => { %>
+                        <div class="esma-card" data-number="<%= esma.number %>" 
+                             data-arabic="<%= esma.arabic %>" 
+                             data-turkish="<%= esma.transliteration %>">
+                            <div class="esma-card-header">
+                                <div class="esma-number"><%= esma.number %></div>
+                                <button class="btn-favorite" onclick="toggleFavorite(<%= esma.number %>)">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
+
+                            <div class="esma-arabic"><%= esma.arabic %></div>
+                            <div class="esma-transliteration"><%= esma.transliteration %></div>
+                            <div class="esma-turkish"><%= esma.turkish %></div>
+                            <div class="esma-meaning"><%= esma.meaning %></div>
+
+                            <% if (esma.description) { %>
+                            <div class="esma-description">
+                                <%= esma.description.substring(0, 100) %>...
+                            </div>
+                            <% } %>
+
+                            <div class="esma-actions">
+                                <button class="btn-play" onclick="playName(<%= esma.number %>)">
+                                    <i class="fas fa-play"></i> Dinle
+                                </button>
+                                <button class="btn-detail" onclick="window.location.href='/esma/<%= esma.number %>'">
+                                    <i class="fas fa-info-circle"></i> Detay
+                                </button>
+                            </div>
+
+                            <div class="listened-badge" style="display: none;">
+                                <i class="fas fa-check"></i> Dinlendi
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-star-and-crescent"></i>
+                        <h3>Esma-ül Hüsna listesi yükleniyor...</h3>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        // LocalStorage keys
+        const LISTENED_KEY = 'esma_listened';
+        const FAVORITES_KEY = 'esma_favorites';
+        const CURRENT_KEY = 'esma_current';
+
+        let currentPlaying = null;
+        let isPlaying = false;
+        let isRepeating = false;
+        let autoPlayNext = true;
+        let listenedNames = JSON.parse(localStorage.getItem(LISTENED_KEY) || '[]');
+        let favoriteNames = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+
+        // Audio element
+        const audio = document.getElementById('audioElement');
+        const esmaData = <%= JSON.stringify(esmas) %>;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            updateFavoriteCount();
+            applyListenedBadges();
+            applyFavorites();
+            initSearch();
+
+            // Audio events
+            audio.addEventListener('ended', function() {
+                markAsListened(currentPlaying);
+                if (autoPlayNext && !isRepeating) {
+                    nextName();
+                } else if (isRepeating) {
+                    audio.play();
+                }
+            });
+
+            audio.addEventListener('play', function() {
+                isPlaying = true;
+                document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i>';
+            });
+
+            audio.addEventListener('pause', function() {
+                isPlaying = false;
+                document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
+            });
+        });
+
+        function playName(number) {
+            currentPlaying = number;
+            const esma = esmaData.find(e => e.number === number);
+            if (!esma) return;
+
+            // Update player UI
+            document.getElementById('playerNumber').textContent = number;
+            document.getElementById('playerArabic').textContent = esma.arabic;
+            document.getElementById('playerTurkish').textContent = esma.transliteration;
+
+            // Show player
+            document.getElementById('audioPlayer').style.display = 'flex';
+
+            // Play audio (using sample URL - replace with actual audio URLs)
+            const audioUrl = esma.audioUrl || `https://www.mp3quran.net/api/v3/asma/${number}.mp3`;
+            audio.src = audioUrl;
+            audio.play();
+
+            // Highlight current card
+            document.querySelectorAll('.esma-card').forEach(card => {
+                card.classList.remove('playing');
+            });
+            document.querySelector(`[data-number="${number}"]`).classList.add('playing');
+
+            localStorage.setItem(CURRENT_KEY, number);
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                audio.pause();
+            } else {
+                audio.play();
+            }
+        }
+
+        function nextName() {
+            if (!currentPlaying) return;
+            const nextNumber = currentPlaying < 99 ? currentPlaying + 1 : 1;
+            playName(nextNumber);
+        }
+
+        function previousName() {
+            if (!currentPlaying) return;
+            const prevNumber = currentPlaying > 1 ? currentPlaying - 1 : 99;
+            playName(prevNumber);
+        }
+
+        function toggleRepeat() {
+            isRepeating = !isRepeating;
+            const icon = document.getElementById('repeatIcon');
+            if (isRepeating) {
+                icon.style.color = '#4facfe';
+                autoPlayNext = false;
+            } else {
+                icon.style.color = '';
+                autoPlayNext = true;
+            }
+        }
+
+        function closePlayer() {
+            audio.pause();
+            document.getElementById('audioPlayer').style.display = 'none';
+            document.querySelectorAll('.esma-card').forEach(card => {
+                card.classList.remove('playing');
+            });
+        }
+
+        function playAll() {
+            playName(1);
+            autoPlayNext = true;
+            isRepeating = false;
+        }
+
+        function markAsListened(number) {
+            if (!listenedNames.includes(number)) {
+                listenedNames.push(number);
+                localStorage.setItem(LISTENED_KEY, JSON.stringify(listenedNames));
+                updateProgress();
+                applyListenedBadges();
+            }
+        }
+
+        function updateProgress() {
+            const count = listenedNames.length;
+            const percent = Math.round((count / 99) * 100);
+            document.getElementById('listenedCount').textContent = count;
+            document.getElementById('progressPercent').textContent = percent;
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+
+        function applyListenedBadges() {
+            listenedNames.forEach(number => {
+                const card = document.querySelector(`[data-number="${number}"]`);
+                if (card) {
+                    card.querySelector('.listened-badge').style.display = 'block';
+                }
+            });
+        }
+
+        function toggleFavorite(number) {
+            const index = favoriteNames.indexOf(number);
+            const btn = document.querySelector(`[data-number="${number}"] .btn-favorite i`);
+            
+            if (index > -1) {
+                favoriteNames.splice(index, 1);
+                btn.classList.remove('fas');
+                btn.classList.add('far');
+            } else {
+                favoriteNames.push(number);
+                btn.classList.remove('far');
+                btn.classList.add('fas');
+            }
+            
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteNames));
+            updateFavoriteCount();
+        }
+
+        function applyFavorites() {
+            favoriteNames.forEach(number => {
+                const btn = document.querySelector(`[data-number="${number}"] .btn-favorite i`);
+                if (btn) {
+                    btn.classList.remove('far');
+                    btn.classList.add('fas');
+                }
+            });
+        }
+
+        function updateFavoriteCount() {
+            document.getElementById('favoriteCount').textContent = favoriteNames.length;
+        }
+
+        function toggleFavorites() {
+            const cards = document.querySelectorAll('.esma-card');
+            const showingFavorites = document.body.classList.toggle('show-favorites-only');
+            
+            cards.forEach(card => {
+                const number = parseInt(card.dataset.number);
+                if (showingFavorites) {
+                    card.style.display = favoriteNames.includes(number) ? 'block' : 'none';
+                } else {
+                    card.style.display = 'block';
+                }
+            });
+        }
+
+        function resetProgress() {
+            if (confirm('Tüm ilerleme kaydedilecek. Emin misiniz?')) {
+                localStorage.removeItem(LISTENED_KEY);
+                localStorage.removeItem(CURRENT_KEY);
+                listenedNames = [];
+                updateProgress();
+                document.querySelectorAll('.listened-badge').forEach(badge => {
+                    badge.style.display = 'none';
+                });
+            }
+        }
+
+        function initSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase().trim();
+                const cards = document.querySelectorAll('.esma-card');
+                
+                cards.forEach(card => {
+                    const arabic = card.dataset.arabic.toLowerCase();
+                    const turkish = card.dataset.turkish.toLowerCase();
+                    const meaning = card.querySelector('.esma-meaning').textContent.toLowerCase();
+                    
+                    if (arabic.includes(query) || turkish.includes(query) || meaning.includes(query)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    </script>
+
+    <style>
+        .esma-page {
+            min-height: 100vh;
+            background: var(--bg-color);
+            padding: 2rem 0 6rem;
+        }
+
+        .esma-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+        }
+
+        .header-icon-bg {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .header-icon-bg i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .esma-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .esma-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .esma-verse {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+            font-style: italic;
+            color: var(--text-primary);
+            box-shadow: var(--shadow);
+        }
+
+        .esma-verse span {
+            display: block;
+            margin-top: 0.5rem;
+            color: #FFA500;
+            font-size: 0.9rem;
+        }
+
+        /* Controls */
+        .controls-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Progress */
+        .progress-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .progress-info strong {
+            color: #FFD700;
+        }
+
+        .progress-bar-container {
+            height: 12px;
+            background: var(--bg-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Audio Player */
+        .audio-player-sticky {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.3);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            gap: 1rem;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .player-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .player-text {
+            flex: 1;
+        }
+
+        .player-arabic {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .player-turkish {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .player-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .player-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+
+        .player-btn:hover {
+            background: #4facfe;
+            color: white;
+            border-color: #4facfe;
+        }
+
+        .player-btn.play-pause {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: none;
+        }
+
+        .player-close {
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Esma Grid */
+        .esma-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .esma-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .esma-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .esma-card.playing {
+            border: 2px solid #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .esma-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .esma-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn-favorite {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-favorite i.fas {
+            color: #f5576c;
+        }
+
+        .esma-arabic {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--text-primary);
+        }
+
+        .esma-transliteration {
+            font-size: 1.2rem;
+            text-align: center;
+            color: #FFD700;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .esma-turkish {
+            font-size: 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .esma-meaning {
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .esma-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .esma-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-play,
+        .btn-detail {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: white;
+        }
+
+        .btn-detail {
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-play:hover,
+        .btn-detail:hover {
+            transform: translateY(-2px);
+        }
+
+        .listened-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4CAF50;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .esma-header h1 {
+                font-size: 2rem;
+            }
+
+            .esma-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .player-arabic {
+                font-size: 1.2rem;
+            }
+
+            .control-buttons {
+                flex-direction: column;
+            }
+
+            .control-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</body>
+</html>

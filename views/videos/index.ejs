@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video ve Ses İçerikler - DiniSohbet</title>
+    <%- include('../partials/head') %>
+    <style>
+        .video-hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .video-filters {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .filter-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .featured-section {
+            margin: 2rem 0;
+        }
+        
+        .featured-video {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px var(--shadow);
+        }
+        
+        .featured-video img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .featured-info {
+            padding: 1.5rem;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .video-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+        
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-duration {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+        }
+        
+        .video-type-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--accent-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .video-info {
+            padding: 1rem;
+        }
+        
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .video-meta {
+            display: flex;
+            gap: 1rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .playlist-section {
+            margin: 3rem 0;
+        }
+        
+        .playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .playlist-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        
+        .playlist-count {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    
+    <div class="video-hero">
+        <div class="container">
+            <h1><i class="fas fa-play-circle"></i> Video ve Ses İçerikler</h1>
+            <p>Dini dersler, hutbeler, Kur'an tilavetleri ve daha fazlası</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Filters -->
+        <div class="video-filters">
+            <div class="filter-group">
+                <label>Kategori</label>
+                <select id="categoryFilter" onchange="applyFilters()">
+                    <option value="">Tümü</option>
+                    <option value="ders" <%= category === 'ders' ? 'selected' : '' %>>Dersler</option>
+                    <option value="hutbe" <%= category === 'hutbe' ? 'selected' : '' %>>Hutbeler</option>
+                    <option value="kuran" <%= category === 'kuran' ? 'selected' : '' %>>Kur'an</option>
+                    <option value="ezan" <%= category === 'ezan' ? 'selected' : '' %>>Ezan</option>
+                    <option value="ilahi" <%= category === 'ilahi' ? 'selected' : '' %>>İlahiler</option>
+                    <option value="sohbet" <%= category === 'sohbet' ? 'selected' : '' %>>Sohbetler</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Tür</label>
+                <select id="typeFilter" onchange="applyFilters()">
+                    <option value="">Tümü</option>
+                    <option value="video" <%= type === 'video' ? 'selected' : '' %>>Video</option>
+                    <option value="audio" <%= type === 'audio' ? 'selected' : '' %>>Ses</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Konuşmacı</label>
+                <input type="text" id="speakerFilter" placeholder="Konuşmacı ara..." value="<%= speaker %>">
+            </div>
+        </div>
+        
+        <!-- Featured Videos -->
+        <% if (featuredVideos && featuredVideos.length > 0) { %>
+        <div class="featured-section">
+            <h2>Öne Çıkan İçerikler</h2>
+            <div class="featured-video" onclick="window.location.href='/videos/<%= featuredVideos[0]._id %>'">
+                <img src="<%= featuredVideos[0].thumbnailUrl %>" alt="<%= featuredVideos[0].title %>">
+                <div class="featured-info">
+                    <h3><%= featuredVideos[0].title %></h3>
+                    <p><%= featuredVideos[0].description.substring(0, 150) %>...</p>
+                    <div class="video-meta">
+                        <span><i class="fas fa-eye"></i> <%= featuredVideos[0].views %> görüntülenme</span>
+                        <span><i class="fas fa-heart"></i> <%= featuredVideos[0].likes.length %> beğeni</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+        
+        <!-- Video Grid -->
+        <div class="video-grid">
+            <% videos.forEach(video => { %>
+            <div class="video-card" onclick="window.location.href='/videos/<%= video._id %>'">
+                <div class="video-thumbnail">
+                    <img src="<%= video.thumbnailUrl %>" alt="<%= video.title %>">
+                    <span class="video-type-badge">
+                        <i class="fas fa-<%= video.type === 'video' ? 'video' : 'microphone' %>"></i>
+                        <%= video.type === 'video' ? 'Video' : 'Ses' %>
+                    </span>
+                    <% if (video.duration > 0) { %>
+                    <span class="video-duration"><%= Math.floor(video.duration / 60) %>:<%= (video.duration % 60).toString().padStart(2, '0') %></span>
+                    <% } %>
+                </div>
+                <div class="video-info">
+                    <h3 class="video-title"><%= video.title %></h3>
+                    <% if (video.speaker) { %>
+                    <p style="color: var(--primary-color); margin-bottom: 0.5rem;">
+                        <i class="fas fa-user"></i> <%= video.speaker %>
+                    </p>
+                    <% } %>
+                    <div class="video-meta">
+                        <span><i class="fas fa-eye"></i> <%= video.views %></span>
+                        <span><i class="fas fa-heart"></i> <%= video.likes.length %></span>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+        
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+            <a href="?page=<%= currentPage - 1 %>&category=<%= category %>&type=<%= type %>&speaker=<%= speaker %>" class="btn">Önceki</a>
+            <% } %>
+            
+            <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="?page=<%= i %>&category=<%= category %>&type=<%= type %>&speaker=<%= speaker %>" 
+               class="btn <%= currentPage === i ? 'btn-primary' : '' %>"><%= i %></a>
+            <% } %>
+            
+            <% if (currentPage < totalPages) { %>
+            <a href="?page=<%= currentPage + 1 %>&category=<%= category %>&type=<%= type %>&speaker=<%= speaker %>" class="btn">Sonraki</a>
+            <% } %>
+        </div>
+        <% } %>
+        
+        <!-- Playlists -->
+        <% if (playlists && playlists.length > 0) { %>
+        <div class="playlist-section">
+            <h2>Oynatma Listeleri</h2>
+            <div class="playlist-grid">
+                <% playlists.forEach(playlist => { %>
+                <div class="playlist-card" onclick="window.location.href='/videos/playlist/<%= playlist._id %>'">
+                    <h3><%= playlist.title %></h3>
+                    <p class="playlist-count">
+                        <i class="fas fa-list"></i> <%= playlist.videos.length %> video
+                    </p>
+                </div>
+                <% }) %>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    
+    <%- include('../partials/footer') %>
+    
+    <script>
+        function applyFilters() {
+            const category = document.getElementById('categoryFilter').value;
+            const type = document.getElementById('typeFilter').value;
+            const speaker = document.getElementById('speakerFilter').value;
+            
+            let url = '/videos?';
+            if (category) url += `category=${category}&`;
+            if (type) url += `type=${type}&`;
+            if (speaker) url += `speaker=${speaker}&`;
+            
+            window.location.href = url;
+        }
+        
+        document.getElementById('speakerFilter').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+    </script>
+</body>
+</html>

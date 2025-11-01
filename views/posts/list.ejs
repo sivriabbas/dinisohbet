@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paylaşımlar - Dini Sohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>Paylaşımlar</h1>
+                <% if (user) { %>
+                    <a href="/posts/new" class="btn btn-primary"><i class="fas fa-plus"></i> Yeni Paylaşım</a>
+                <% } %>
+            </div>
+
+            <!-- Filtreler -->
+            <div class="filters">
+                <div class="category-filter">
+                    <a href="/posts?category=all" class="filter-btn <%= category === 'all' ? 'active' : '' %>">Tümü</a>
+                    <a href="/posts?category=genel" class="filter-btn <%= category === 'genel' ? 'active' : '' %>">Genel</a>
+                    <a href="/posts?category=dua" class="filter-btn <%= category === 'dua' ? 'active' : '' %>">Dua</a>
+                    <a href="/posts?category=hadis" class="filter-btn <%= category === 'hadis' ? 'active' : '' %>">Hadis</a>
+                    <a href="/posts?category=ayet" class="filter-btn <%= category === 'ayet' ? 'active' : '' %>">Ayet</a>
+                    <a href="/posts?category=sohbet" class="filter-btn <%= category === 'sohbet' ? 'active' : '' %>">Sohbet</a>
+                    <a href="/posts?category=soru-cevap" class="filter-btn <%= category === 'soru-cevap' ? 'active' : '' %>">Soru & Cevap</a>
+                    <a href="/posts?category=hikaye" class="filter-btn <%= category === 'hikaye' ? 'active' : '' %>">Hikaye</a>
+                </div>
+                <form action="/posts" method="GET" class="search-form">
+                    <input type="text" name="search" placeholder="Ara..." value="<%= search %>">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+
+            <!-- Paylaşımlar -->
+            <% if (posts && posts.length > 0) { %>
+                <div class="posts-list">
+                    <% posts.forEach(post => { %>
+                        <div class="post-card">
+                            <div class="post-header">
+                                <div class="post-author">
+                                    <img src="<%= post.author.avatar || '/images/default-avatar.png' %>" alt="<%= post.author.username %>">
+                                    <div>
+                                        <a href="/users/<%= post.author.username %>"><%= post.author.username %></a>
+                                        <span class="post-date"><%= new Date(post.createdAt).toLocaleDateString('tr-TR') %></span>
+                                    </div>
+                                </div>
+                                <span class="post-category <%= post.category %>"><%= post.category %></span>
+                            </div>
+                            <div class="post-content">
+                                <h3><a href="/posts/<%= post._id %>"><%= post.title %></a></h3>
+                                <p><%= post.content.substring(0, 200) %>...</p>
+                                <% if (post.tags && post.tags.length > 0) { %>
+                                    <div class="post-tags">
+                                        <% post.tags.forEach(tag => { %>
+                                            <span class="tag">#<%= tag %></span>
+                                        <% }); %>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="post-footer">
+                                <span><i class="fas fa-heart"></i> <%= post.likes.length %></span>
+                                <span><i class="fas fa-comment"></i> <%= post.comments.length %></span>
+                                <span><i class="fas fa-eye"></i> <%= post.viewCount %></span>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <p class="no-posts">Henüz paylaşım yok.</p>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

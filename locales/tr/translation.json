@@ -1,0 +1,130 @@
+{
+  "site": {
+    "title": "DiniSohbet - İslami Bilgi ve Sohbet Platformu",
+    "description": "Kur'an, Hadis, Dua ve İslami İçerikler"
+  },
+  "nav": {
+    "home": "Ana Sayfa",
+    "quran": "Kur'an-ı Kerim",
+    "hadiths": "Hadisler",
+    "duas": "Dualar",
+    "posts": "Paylaşımlar",
+    "prayerTimes": "Namaz Vakitleri",
+    "qibla": "Kıble",
+    "names": "Esmaül Hüsna",
+    "calendar": "Dini Takvim",
+    "community": "Topluluk",
+    "profile": "Profil",
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "logout": "Çıkış Yap",
+    "admin": "Yönetim",
+    "themes": "Temalar",
+    "offline": "Offline Mod",
+    "qa": "Soru & Cevap",
+    "chat": "Canlı Sohbet",
+    "videos": "Video/Ses"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "username": "Kullanıcı Adı",
+    "confirmPassword": "Şifre Tekrar",
+    "forgotPassword": "Şifremi Unuttum",
+    "rememberMe": "Beni Hatırla",
+    "alreadyHaveAccount": "Zaten hesabınız var mı?",
+    "dontHaveAccount": "Hesabınız yok mu?",
+    "loginSuccess": "Giriş başarılı!",
+    "registerSuccess": "Kayıt başarılı!",
+    "logoutSuccess": "Çıkış yapıldı"
+  },
+  "common": {
+    "search": "Ara...",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "share": "Paylaş",
+    "like": "Beğen",
+    "comment": "Yorum Yap",
+    "read": "Oku",
+    "listen": "Dinle",
+    "download": "İndir",
+    "upload": "Yükle",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "warning": "Uyarı",
+    "info": "Bilgi",
+    "yes": "Evet",
+    "no": "Hayır",
+    "close": "Kapat",
+    "back": "Geri",
+    "next": "İleri",
+    "previous": "Önceki",
+    "submit": "Gönder",
+    "language": "Dil"
+  },
+  "quran": {
+    "title": "Kur'an-ı Kerim",
+    "surah": "Sure",
+    "verse": "Ayet",
+    "juz": "Cüz",
+    "page": "Sayfa",
+    "searchVerses": "Ayet Ara",
+    "arabic": "Arapça",
+    "turkish": "Türkçe Meal",
+    "totalVerses": "{{count}} Ayet",
+    "meccan": "Mekki",
+    "medinan": "Medeni"
+  },
+  "hadith": {
+    "title": "Hadisler",
+    "source": "Kaynak",
+    "narrator": "Ravi",
+    "searchHadiths": "Hadis Ara",
+    "allSources": "Tüm Kaynaklar"
+  },
+  "dua": {
+    "title": "Dualar",
+    "category": "Kategori",
+    "daily": "Günlük Dualar",
+    "prayer": "Namaz Duaları",
+    "special": "Özel Dualar"
+  },
+  "prayerTimes": {
+    "title": "Namaz Vakitleri",
+    "fajr": "İmsak",
+    "sunrise": "Güneş",
+    "dhuhr": "Öğle",
+    "asr": "İkindi",
+    "maghrib": "Akşam",
+    "isha": "Yatsı",
+    "selectCity": "Şehir Seçin",
+    "nextPrayer": "Sonraki Namaz",
+    "remaining": "Kalan Süre"
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "enable": "Bildirimleri Etkinleştir",
+    "disable": "Bildirimleri Kapat",
+    "prayerReminder": "Namaz Vakti Hatırlatıcısı",
+    "newContent": "Yeni İçerik Bildirimi",
+    "settings": "Bildirim Ayarları"
+  },
+  "offline": {
+    "title": "Offline Mod",
+    "download": "İndir",
+    "downloaded": "İndirildi",
+    "available": "Çevrimdışı Kullanılabilir",
+    "notAvailable": "Çevrimdışı Kullanılamaz"
+  },
+  "theme": {
+    "title": "Tema Seçimi",
+    "dark": "Karanlık",
+    "light": "Aydınlık",
+    "custom": "Özel Tema Oluştur"
+  }
+}

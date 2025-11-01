@@ -1,0 +1,130 @@
+{
+  "site": {
+    "title": "دينِ صحبت - منصة المعرفة والدردشة الإسلامية",
+    "description": "القرآن الكريم، الحديث، الدعاء والمحتوى الإسلامي"
+  },
+  "nav": {
+    "home": "الصفحة الرئيسية",
+    "quran": "القرآن الكريم",
+    "hadiths": "الأحاديث",
+    "duas": "الأدعية",
+    "posts": "المنشورات",
+    "prayerTimes": "مواقيت الصلاة",
+    "qibla": "القبلة",
+    "names": "أسماء الله الحسنى",
+    "calendar": "التقويم الإسلامي",
+    "community": "المجتمع",
+    "profile": "الملف الشخصي",
+    "login": "تسجيل الدخول",
+    "register": "التسجيل",
+    "logout": "تسجيل الخروج",
+    "admin": "الإدارة",
+    "themes": "السمات",
+    "offline": "وضع عدم الاتصال",
+    "qa": "أسئلة وأجوبة",
+    "chat": "دردشة مباشرة",
+    "videos": "فيديو/صوت"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "التسجيل",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "username": "اسم المستخدم",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور",
+    "rememberMe": "تذكرني",
+    "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "loginSuccess": "تم تسجيل الدخول بنجاح!",
+    "registerSuccess": "تم التسجيل بنجاح!",
+    "logoutSuccess": "تم تسجيل الخروج"
+  },
+  "common": {
+    "search": "بحث...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "share": "مشاركة",
+    "like": "إعجاب",
+    "comment": "تعليق",
+    "read": "قراءة",
+    "listen": "استماع",
+    "download": "تحميل",
+    "upload": "رفع",
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "warning": "تحذير",
+    "info": "معلومات",
+    "yes": "نعم",
+    "no": "لا",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "submit": "إرسال",
+    "language": "اللغة"
+  },
+  "quran": {
+    "title": "القرآن الكريم",
+    "surah": "سورة",
+    "verse": "آية",
+    "juz": "جزء",
+    "page": "صفحة",
+    "searchVerses": "بحث في الآيات",
+    "arabic": "العربية",
+    "turkish": "الترجمة التركية",
+    "totalVerses": "{{count}} آية",
+    "meccan": "مكية",
+    "medinan": "مدنية"
+  },
+  "hadith": {
+    "title": "الأحاديث",
+    "source": "المصدر",
+    "narrator": "الراوي",
+    "searchHadiths": "بحث في الأحاديث",
+    "allSources": "جميع المصادر"
+  },
+  "dua": {
+    "title": "الأدعية",
+    "category": "الفئة",
+    "daily": "أدعية يومية",
+    "prayer": "أدعية الصلاة",
+    "special": "أدعية خاصة"
+  },
+  "prayerTimes": {
+    "title": "مواقيت الصلاة",
+    "fajr": "الفجر",
+    "sunrise": "الشروق",
+    "dhuhr": "الظهر",
+    "asr": "العصر",
+    "maghrib": "المغرب",
+    "isha": "العشاء",
+    "selectCity": "اختر المدينة",
+    "nextPrayer": "الصلاة التالية",
+    "remaining": "الوقت المتبقي"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "enable": "تفعيل الإشعارات",
+    "disable": "إيقاف الإشعارات",
+    "prayerReminder": "تذكير بوقت الصلاة",
+    "newContent": "إشعار المحتوى الجديد",
+    "settings": "إعدادات الإشعارات"
+  },
+  "offline": {
+    "title": "وضع عدم الاتصال",
+    "download": "تحميل",
+    "downloaded": "تم التحميل",
+    "available": "متاح دون اتصال",
+    "notAvailable": "غير متاح دون اتصال"
+  },
+  "theme": {
+    "title": "اختيار السمة",
+    "dark": "داكن",
+    "light": "فاتح",
+    "custom": "إنشاء سمة مخصصة"
+  }
+}

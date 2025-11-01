@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - DiniSohbet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/main-styles.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="/css/themes.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="themes-hero">
+            <div class="container">
+                <h1 class="hero-title">
+                    <i class="fas fa-palette"></i>
+                    Tema Galerisi
+                </h1>
+                <p class="hero-subtitle">
+                    Uygulamayı kişiselleştirin, hazır temalardan seçin veya kendi temanızı oluşturun
+                </p>
+                <div class="current-theme-badge">
+                    <span>Aktif Tema: </span>
+                    <span class="current-theme-display">🌐 Varsayılan</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container themes-container">
+            <!-- Theme Actions -->
+            <div class="theme-actions">
+                <button class="btn-theme-action btn-create-theme" onclick="openCustomThemeCreator()">
+                    <i class="fas fa-paint-brush"></i>
+                    Özel Tema Oluştur
+                </button>
+                <button class="btn-theme-action btn-import-theme" onclick="importTheme()">
+                    <i class="fas fa-file-import"></i>
+                    Tema İçe Aktar
+                </button>
+                <button class="btn-theme-action btn-export-theme" onclick="exportCurrentTheme()">
+                    <i class="fas fa-file-export"></i>
+                    Aktif Temayı Dışa Aktar
+                </button>
+            </div>
+
+            <!-- Preset Themes Section -->
+            <section class="themes-section">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i>
+                    Hazır Temalar
+                </h2>
+                <p class="section-description">
+                    Profesyonel olarak tasarlanmış renk paletleri
+                </p>
+
+                <div class="theme-grid" id="presetThemesGrid">
+                    <!-- Preset themes will be rendered here by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Custom Themes Section -->
+            <section class="themes-section">
+                <h2 class="section-title">
+                    <i class="fas fa-magic"></i>
+                    Özel Temalarım
+                </h2>
+                <p class="section-description">
+                    Sizin tarafınızdan oluşturulmuş veya içe aktarılmış temalar
+                </p>
+
+                <div class="theme-grid" id="customThemesGrid">
+                    <!-- Custom themes will be rendered here by JavaScript -->
+                </div>
+
+                <div class="empty-state" id="emptyCustomThemes" style="display: none;">
+                    <i class="fas fa-palette" style="font-size: 4rem; color: #ccc; margin-bottom: 20px;"></i>
+                    <p>Henüz özel tema oluşturmadınız.</p>
+                    <button class="btn-theme-action btn-create-theme" onclick="openCustomThemeCreator()">
+                        <i class="fas fa-paint-brush"></i>
+                        İlk Temanızı Oluşturun
+                    </button>
+                </div>
+            </section>
+
+            <!-- Tips Section -->
+            <section class="tips-section">
+                <div class="tips-card">
+                    <h3><i class="fas fa-lightbulb"></i> İpuçları</h3>
+                    <ul>
+                        <li><strong>Önizleme:</strong> Bir temayı uygulamadan önce "Önizle" butonuna tıklayarak görünümünü kontrol edin.</li>
+                        <li><strong>Özel Tema:</strong> Kendi renk paletinizi oluşturmak için "Özel Tema Oluştur" butonunu kullanın.</li>
+                        <li><strong>Paylaşım:</strong> Beğendiğiniz bir temayı dışa aktarıp arkadaşlarınızla paylaşabilirsiniz.</li>
+                        <li><strong>İçe Aktarma:</strong> Başkalarının paylaştığı tema dosyalarını (.json) içe aktarabilirsiniz.</li>
+                        <li><strong>Silme:</strong> Özel temalarınızı istediğiniz zaman silebilirsiniz.</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Custom Theme Creator Modal -->
+    <div id="customThemeModal" class="custom-theme-modal">
+        <div class="custom-theme-content">
+            <div class="custom-theme-header">
+                <h3><i class="fas fa-paint-brush"></i> Özel Tema Oluştur</h3>
+                <button class="theme-gallery-close" onclick="closeCustomThemeCreator()">×</button>
+            </div>
+            <div class="custom-theme-body">
+                <div class="theme-form-group">
+                    <label for="themeName">Tema Adı *</label>
+                    <input type="text" id="themeName" placeholder="Örn: Benim Mavi Temam">
+                </div>
+
+                <div class="theme-form-group">
+                    <label for="themeIcon">Tema İkonu (Emoji)</label>
+                    <input type="text" id="themeIcon" placeholder="🎨" maxlength="2">
+                </div>
+
+                <div class="theme-form-group">
+                    <label>Renk Paleti</label>
+                    <div class="color-pickers-grid">
+                        <div class="color-picker-item">
+                            <label>Ana Renk</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="colorPrimary" value="#2c5f2d" onchange="updateColorText(this, 'colorPrimaryText')">
+                                <input type="text" id="colorPrimaryText" value="#2c5f2d" maxlength="7" onchange="updateColorPicker(this, 'colorPrimary')">
+                            </div>
+                        </div>
+
+                        <div class="color-picker-item">
+                            <label>İkincil Renk</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="colorSecondary" value="#97BC62" onchange="updateColorText(this, 'colorSecondaryText')">
+                                <input type="text" id="colorSecondaryText" value="#97BC62" maxlength="7" onchange="updateColorPicker(this, 'colorSecondary')">
+                            </div>
+                        </div>
+
+                        <div class="color-picker-item">
+                            <label>Vurgu Rengi</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="colorAccent" value="#FFD700" onchange="updateColorText(this, 'colorAccentText')">
+                                <input type="text" id="colorAccentText" value="#FFD700" maxlength="7" onchange="updateColorPicker(this, 'colorAccent')">
+                            </div>
+                        </div>
+
+                        <div class="color-picker-item">
+                            <label>Arka Plan</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="colorBackground" value="#ffffff" onchange="updateColorText(this, 'colorBackgroundText')">
+                                <input type="text" id="colorBackgroundText" value="#ffffff" maxlength="7" onchange="updateColorPicker(this, 'colorBackground')">
+                            </div>
+                        </div>
+
+                        <div class="color-picker-item">
+                            <label>Kart Arka Planı</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="colorCardBg" value="#ffffff" onchange="updateColorText(this, 'colorCardBgText')">
+                                <input type="text" id="colorCardBgText" value="#ffffff" maxlength="7" onchange="updateColorPicker(this, 'colorCardBg')">
+                            </div>
+                        </div>
+
+                        <div class="color-picker-item">
+                            <label>Ana Metin</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="colorTextPrimary" value="#333333" onchange="updateColorText(this, 'colorTextPrimaryText')">
+                                <input type="text" id="colorTextPrimaryText" value="#333333" maxlength="7" onchange="updateColorPicker(this, 'colorTextPrimary')">
+                            </div>
+                        </div>
+
+                        <div class="color-picker-item">
+                            <label>İkincil Metin</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="colorTextSecondary" value="#666666" onchange="updateColorText(this, 'colorTextSecondaryText')">
+                                <input type="text" id="colorTextSecondaryText" value="#666666" maxlength="7" onchange="updateColorPicker(this, 'colorTextSecondary')">
+                            </div>
+                        </div>
+
+                        <div class="color-picker-item">
+                            <label>Kenarlık</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="colorBorder" value="#e0e0e0" onchange="updateColorText(this, 'colorBorderText')">
+                                <input type="text" id="colorBorderText" value="#e0e0e0" maxlength="7" onchange="updateColorPicker(this, 'colorBorder')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="theme-preview">
+                    <h4><i class="fas fa-eye"></i> Önizleme</h4>
+                    <div class="preview-elements" id="livePreview">
+                        <button class="preview-button">Örnek Buton</button>
+                        <div class="preview-card">
+                            <p class="preview-text">Ana metin örneği</p>
+                            <p class="preview-text-muted">İkincil metin örneği</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="theme-form-actions">
+                    <button class="btn-save-theme" onclick="createCustomTheme()">
+                        <i class="fas fa-save"></i> Temayı Kaydet ve Uygula
+                    </button>
+                    <button class="btn-cancel-theme" onclick="closeCustomThemeCreator()">
+                        İptal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <script src="/js/themes.js"></script>
+    <script>
+        // Helper functions for color picker sync
+        function updateColorText(colorInput, textInputId) {
+            document.getElementById(textInputId).value = colorInput.value;
+            updateLivePreview();
+        }
+
+        function updateColorPicker(textInput, colorInputId) {
+            const value = textInput.value;
+            if (/^#[0-9A-F]{6}$/i.test(value)) {
+                document.getElementById(colorInputId).value = value;
+                updateLivePreview();
+            }
+        }
+
+        function updateLivePreview() {
+            const preview = document.getElementById('livePreview');
+            const colors = {
+                primary: document.getElementById('colorPrimary').value,
+                secondary: document.getElementById('colorSecondary').value,
+                accent: document.getElementById('colorAccent').value,
+                background: document.getElementById('colorBackground').value,
+                cardBg: document.getElementById('colorCardBg').value,
+                textPrimary: document.getElementById('colorTextPrimary').value,
+                textSecondary: document.getElementById('colorTextSecondary').value,
+                border: document.getElementById('colorBorder').value
+            };
+
+            preview.style.setProperty('--primary-color', colors.primary);
+            preview.style.setProperty('--secondary-color', colors.secondary);
+            preview.style.setProperty('--accent-color', colors.accent);
+            preview.style.setProperty('--background', colors.background);
+            preview.style.setProperty('--card-bg-color', colors.cardBg);
+            preview.style.setProperty('--text-primary', colors.textPrimary);
+            preview.style.setProperty('--text-secondary', colors.textSecondary);
+            preview.style.setProperty('--border-color', colors.border);
+        }
+
+        // Render themes on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAllThemes();
+        });
+
+        function renderAllThemes() {
+            if (!window.themeManager) {
+                setTimeout(renderAllThemes, 100);
+                return;
+            }
+
+            const themes = themeManager.getAllThemes();
+            const presetGrid = document.getElementById('presetThemesGrid');
+            const customGrid = document.getElementById('customThemesGrid');
+            const emptyState = document.getElementById('emptyCustomThemes');
+
+            presetGrid.innerHTML = '';
+            customGrid.innerHTML = '';
+
+            let hasCustomThemes = false;
+
+            Object.entries(themes).forEach(([themeId, theme], index) => {
+                const card = createThemeCard(themeId, theme);
+                card.style.setProperty('--index', index);
+                
+                if (theme.custom) {
+                    customGrid.appendChild(card);
+                    hasCustomThemes = true;
+                } else {
+                    presetGrid.appendChild(card);
+                }
+            });
+
+            emptyState.style.display = hasCustomThemes ? 'none' : 'block';
+        }
+
+        // Listen for theme changes
+        document.addEventListener('themeApplied', function() {
+            renderAllThemes();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İslami Takvim - DiniSohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="calendar-page">
+        <!-- Başlık -->
+        <div class="calendar-header">
+            <div class="header-icon-bg">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <h1>İslami Takvim</h1>
+            <p class="calendar-subtitle">Hicri takvim ve önemli günler</p>
+        </div>
+
+        <div class="container">
+            <!-- Bugünün Tarihi -->
+            <div class="today-section">
+                <div class="today-card gregorian">
+                    <div class="card-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Miladi Tarih</h3>
+                        <p class="date-display" id="gregorianDate">1 Kasım 2025</p>
+                        <p class="day-name" id="gregorianDay">Cumartesi</p>
+                    </div>
+                </div>
+
+                <div class="today-card hijri">
+                    <div class="card-icon">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Hicri Tarih</h3>
+                        <p class="date-display" id="hijriDate">9 Cemaziyel-Evvel 1447</p>
+                        <p class="day-info" id="hijriInfo">Ay: Cemaziyel-Evvel</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarih Çevirici -->
+            <div class="converter-section">
+                <h3><i class="fas fa-arrows-rotate"></i> Tarih Çevirici</h3>
+                <div class="converter-container">
+                    <div class="converter-box">
+                        <h4>Miladi → Hicri</h4>
+                        <div class="date-input-group">
+                            <input type="number" id="gDay" placeholder="Gün" min="1" max="31" value="1">
+                            <select id="gMonth">
+                                <option value="1">Ocak</option>
+                                <option value="2">Şubat</option>
+                                <option value="3">Mart</option>
+                                <option value="4">Nisan</option>
+                                <option value="5">Mayıs</option>
+                                <option value="6">Haziran</option>
+                                <option value="7">Temmuz</option>
+                                <option value="8">Ağustos</option>
+                                <option value="9">Eylül</option>
+                                <option value="10">Ekim</option>
+                                <option value="11" selected>Kasım</option>
+                                <option value="12">Aralık</option>
+                            </select>
+                            <input type="number" id="gYear" placeholder="Yıl" min="1900" max="2100" value="2025">
+                        </div>
+                        <button class="btn-convert" onclick="convertGregorianToHijri()">
+                            <i class="fas fa-arrow-right"></i> Çevir
+                        </button>
+                        <div class="result-box" id="gregorianResult"></div>
+                    </div>
+
+                    <div class="converter-box">
+                        <h4>Hicri → Miladi</h4>
+                        <div class="date-input-group">
+                            <input type="number" id="hDay" placeholder="Gün" min="1" max="30" value="9">
+                            <select id="hMonth">
+                                <option value="1">Muharrem</option>
+                                <option value="2">Safer</option>
+                                <option value="3">Rebiülevvel</option>
+                                <option value="4">Rebiülahir</option>
+                                <option value="5" selected>Cemaziyel-Evvel</option>
+                                <option value="6">Cemaziyel-Ahir</option>
+                                <option value="7">Recep</option>
+                                <option value="8">Şaban</option>
+                                <option value="9">Ramazan</option>
+                                <option value="10">Şevval</option>
+                                <option value="11">Zilkade</option>
+                                <option value="12">Zilhicce</option>
+                            </select>
+                            <input type="number" id="hYear" placeholder="Yıl" min="1400" max="1500" value="1447">
+                        </div>
+                        <button class="btn-convert" onclick="convertHijriToGregorian()">
+                            <i class="fas fa-arrow-left"></i> Çevir
+                        </button>
+                        <div class="result-box" id="hijriResult"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kandil Günleri ve Önemli Günler -->
+            <div class="special-days-section">
+                <h3><i class="fas fa-star"></i> Kandil Günleri ve Önemli İslami Günler</h3>
+                <div class="special-days-grid" id="specialDaysGrid">
+                    <!-- JavaScript ile doldurulacak -->
+                </div>
+            </div>
+
+            <!-- Hicri Aylar Bilgisi -->
+            <div class="months-section">
+                <h3><i class="fas fa-calendar"></i> Hicri Aylar</h3>
+                <div class="months-grid">
+                    <div class="month-card">
+                        <div class="month-number">1</div>
+                        <h4>Muharrem</h4>
+                        <p>Haram aylardan biri. Aşure günü bu aydadır.</p>
+                        <span class="month-badge haram">Haram Ay</span>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">2</div>
+                        <h4>Safer</h4>
+                        <p>İkinci ay.</p>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">3</div>
+                        <h4>Rebiülevvel</h4>
+                        <p>Hz. Muhammed (sav) bu ayda dünyaya gelmiştir.</p>
+                        <span class="month-badge special">Mevlid Kandili</span>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">4</div>
+                        <h4>Rebiülahir</h4>
+                        <p>Dördüncü ay.</p>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">5</div>
+                        <h4>Cemaziyel-Evvel</h4>
+                        <p>Beşinci ay.</p>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">6</div>
+                        <h4>Cemaziyel-Ahir</h4>
+                        <p>Altıncı ay.</p>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">7</div>
+                        <h4>Recep</h4>
+                        <p>Haram aylardan biri. Regaib ve Miraç Kandili bu aydadır.</p>
+                        <span class="month-badge haram">Haram Ay</span>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">8</div>
+                        <h4>Şaban</h4>
+                        <p>Berat Kandili bu aydadır.</p>
+                        <span class="month-badge special">Berat Kandili</span>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">9</div>
+                        <h4>Ramazan</h4>
+                        <p>Oruç ayı. Kadir Gecesi bu aydadır.</p>
+                        <span class="month-badge blessed">Mübarek Ay</span>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">10</div>
+                        <h4>Şevval</h4>
+                        <p>Ramazan Bayramı bu aydadır.</p>
+                        <span class="month-badge special">Ramazan Bayramı</span>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">11</div>
+                        <h4>Zilkade</h4>
+                        <p>Haram aylardan biri.</p>
+                        <span class="month-badge haram">Haram Ay</span>
+                    </div>
+
+                    <div class="month-card">
+                        <div class="month-number">12</div>
+                        <h4>Zilhicce</h4>
+                        <p>Haram aylardan biri. Hac ayı ve Kurban Bayramı bu aydadır.</p>
+                        <span class="month-badge haram">Haram Ay</span>
+                        <span class="month-badge special">Kurban Bayramı</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kandil Günleri Açıklamaları -->
+            <div class="kandil-info-section">
+                <h3><i class="fas fa-info-circle"></i> Kandil Günleri Hakkında</h3>
+                <div class="kandil-cards">
+                    <div class="kandil-card">
+                        <div class="kandil-icon">🕌</div>
+                        <h4>Mevlid Kandili</h4>
+                        <p class="kandil-date">12 Rebiülevvel</p>
+                        <p>Hz. Muhammed (sav)'in doğum günü. Bu gecede Peygamberimizin hayatı anlatılır, mevlit okunur.</p>
+                    </div>
+
+                    <div class="kandil-card">
+                        <div class="kandil-icon">⭐</div>
+                        <h4>Regaib Kandili</h4>
+                        <p class="kandil-date">Recep ayının ilk cuma gecesi</p>
+                        <p>Recep ayının müjdecisi olan bu gecede ibadet edilir, dua ve istiğfar çoğaltılır.</p>
+                    </div>
+
+                    <div class="kandil-card">
+                        <div class="kandil-icon">🌙</div>
+                        <h4>Miraç Kandili</h4>
+                        <p class="kandil-date">27 Recep</p>
+                        <p>Hz. Muhammed (sav)'in Miraç'a yükseldiği gece. Namaz ibadetinin farz kılındığı gecedir.</p>
+                    </div>
+
+                    <div class="kandil-card">
+                        <div class="kandil-icon">✨</div>
+                        <h4>Berat Kandili</h4>
+                        <p class="kandil-date">15 Şaban</p>
+                        <p>Kaderle ilgili hükümlerin belirlendiği gece. Bağışlanma için dua edilir.</p>
+                    </div>
+
+                    <div class="kandil-card">
+                        <div class="kandil-icon">🌟</div>
+                        <h4>Kadir Gecesi</h4>
+                        <p class="kandil-date">Ramazan'ın 27. gecesi (son 10 günde aranır)</p>
+                        <p>Bin aydan hayırlı olan gece. Kuran'ın indirilmeye başlandığı gecedir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        // Hicri ay isimleri
+        const hijriMonths = [
+            'Muharrem', 'Safer', 'Rebiülevvel', 'Rebiülahir',
+            'Cemaziyel-Evvel', 'Cemaziyel-Ahir', 'Recep', 'Şaban',
+            'Ramazan', 'Şevval', 'Zilkade', 'Zilhicce'
+        ];
+
+        const gregorianMonths = [
+            'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+            'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+        ];
+
+        const dayNames = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+
+        // Önemli İslami Günler (2025-2026 için)
+        const specialDays = [
+            { 
+                name: 'Ramazan Başlangıcı', 
+                hijriDate: '1 Ramazan 1447', 
+                gregorianDate: new Date('2026-02-17'),
+                type: 'blessed',
+                description: 'Mübarek Ramazan ayının ilk günü'
+            },
+            { 
+                name: 'Kadir Gecesi', 
+                hijriDate: '27 Ramazan 1447', 
+                gregorianDate: new Date('2026-03-15'),
+                type: 'kandil',
+                description: 'Bin aydan hayırlı olan gece'
+            },
+            { 
+                name: 'Ramazan Bayramı (1. Gün)', 
+                hijriDate: '1 Şevval 1447', 
+                gregorianDate: new Date('2026-03-19'),
+                type: 'eid',
+                description: 'Ramazan Bayramının ilk günü'
+            },
+            { 
+                name: 'Ramazan Bayramı (2. Gün)', 
+                hijriDate: '2 Şevval 1447', 
+                gregorianDate: new Date('2026-03-20'),
+                type: 'eid',
+                description: 'Ramazan Bayramının ikinci günü'
+            },
+            { 
+                name: 'Ramazan Bayramı (3. Gün)', 
+                hijriDate: '3 Şevval 1447', 
+                gregorianDate: new Date('2026-03-21'),
+                type: 'eid',
+                description: 'Ramazan Bayramının üçüncü günü'
+            },
+            { 
+                name: 'Arafat Günü', 
+                hijriDate: '9 Zilhicce 1447', 
+                gregorianDate: new Date('2026-06-15'),
+                type: 'special',
+                description: 'Hacıların Arafat\'ta vakfe yaptığı gün'
+            },
+            { 
+                name: 'Kurban Bayramı (1. Gün)', 
+                hijriDate: '10 Zilhicce 1447', 
+                gregorianDate: new Date('2026-06-16'),
+                type: 'eid',
+                description: 'Kurban Bayramının ilk günü'
+            },
+            { 
+                name: 'Kurban Bayramı (2. Gün)', 
+                hijriDate: '11 Zilhicce 1447', 
+                gregorianDate: new Date('2026-06-17'),
+                type: 'eid',
+                description: 'Kurban Bayramının ikinci günü'
+            },
+            { 
+                name: 'Kurban Bayramı (3. Gün)', 
+                hijriDate: '12 Zilhicce 1447', 
+                gregorianDate: new Date('2026-06-18'),
+                type: 'eid',
+                description: 'Kurban Bayramının üçüncü günü'
+            },
+            { 
+                name: 'Kurban Bayramı (4. Gün)', 
+                hijriDate: '13 Zilhicce 1447', 
+                gregorianDate: new Date('2026-06-19'),
+                type: 'eid',
+                description: 'Kurban Bayramının dördüncü günü'
+            },
+            { 
+                name: 'Hicri Yılbaşı', 
+                hijriDate: '1 Muharrem 1448', 
+                gregorianDate: new Date('2026-07-08'),
+                type: 'special',
+                description: 'Hicri 1448 yılının ilk günü'
+            },
+            { 
+                name: 'Aşure Günü', 
+                hijriDate: '10 Muharrem 1448', 
+                gregorianDate: new Date('2026-07-17'),
+                type: 'special',
+                description: 'Hz. Nuh\'un gemisinin karaya oturduğu, Hz. Musa\'nın Firavun\'dan kurtulduğu gün'
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDates();
+            displaySpecialDays();
+        });
+
+        function updateCurrentDates() {
+            const now = new Date();
+            
+            // Gregorian date
+            const gDay = now.getDate();
+            const gMonth = now.getMonth();
+            const gYear = now.getFullYear();
+            const dayOfWeek = now.getDay();
+            
+            document.getElementById('gregorianDate').textContent = 
+                `${gDay} ${gregorianMonths[gMonth]} ${gYear}`;
+            document.getElementById('gregorianDay').textContent = dayNames[dayOfWeek];
+            
+            // Convert to Hijri (approximate)
+            const hijri = gregorianToHijri(gDay, gMonth + 1, gYear);
+            document.getElementById('hijriDate').textContent = 
+                `${hijri.day} ${hijriMonths[hijri.month - 1]} ${hijri.year}`;
+            document.getElementById('hijriInfo').textContent = 
+                `Ay: ${hijriMonths[hijri.month - 1]}`;
+        }
+
+        function gregorianToHijri(day, month, year) {
+            // Simplified Hijri conversion (approximation)
+            // In production, use a proper Hijri calendar library
+            const a = Math.floor((14 - month) / 12);
+            const y = year + 4800 - a;
+            const m = month + (12 * a) - 3;
+            const jd = day + Math.floor((153 * m + 2) / 5) + (365 * y) + 
+                      Math.floor(y / 4) - Math.floor(y / 100) + 
+                      Math.floor(y / 100 / 4) - 32045;
+            
+            const l = jd - 1948440 + 10632;
+            const n = Math.floor((l - 1) / 10631);
+            const l1 = l - 10631 * n + 354;
+            const j = Math.floor((10985 - l1) / 5316) * Math.floor((50 * l1) / 17719) +
+                     Math.floor(l1 / 5670) * Math.floor((43 * l1) / 15238);
+            const l2 = l1 - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) -
+                      Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+            const hMonth = Math.floor((24 * l2) / 709);
+            const hDay = l2 - Math.floor((709 * hMonth) / 24);
+            const hYear = 30 * n + j - 30;
+            
+            return {
+                day: hDay,
+                month: hMonth,
+                year: hYear
+            };
+        }
+
+        function hijriToGregorian(day, month, year) {
+            // Simplified conversion (approximation)
+            const jd = Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month -
+                      Math.floor((month - 1) / 2) + day + 1948440 - 385;
+            
+            const l = jd + 68569;
+            const n = Math.floor((4 * l) / 146097);
+            const l1 = l - Math.floor((146097 * n + 3) / 4);
+            const i = Math.floor((4000 * (l1 + 1)) / 1461001);
+            const l2 = l1 - Math.floor((1461 * i) / 4) + 31;
+            const j = Math.floor((80 * l2) / 2447);
+            const gDay = l2 - Math.floor((2447 * j) / 80);
+            const l3 = Math.floor(j / 11);
+            const gMonth = j + 2 - (12 * l3);
+            const gYear = 100 * (n - 49) + i + l3;
+            
+            return {
+                day: gDay,
+                month: gMonth,
+                year: gYear
+            };
+        }
+
+        function convertGregorianToHijri() {
+            const day = parseInt(document.getElementById('gDay').value);
+            const month = parseInt(document.getElementById('gMonth').value);
+            const year = parseInt(document.getElementById('gYear').value);
+            
+            if (day && month && year) {
+                const hijri = gregorianToHijri(day, month, year);
+                document.getElementById('gregorianResult').innerHTML = `
+                    <div class="result-success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>${hijri.day} ${hijriMonths[hijri.month - 1]} ${hijri.year}</strong>
+                    </div>
+                `;
+            } else {
+                document.getElementById('gregorianResult').innerHTML = `
+                    <div class="result-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Lütfen tüm alanları doldurun
+                    </div>
+                `;
+            }
+        }
+
+        function convertHijriToGregorian() {
+            const day = parseInt(document.getElementById('hDay').value);
+            const month = parseInt(document.getElementById('hMonth').value);
+            const year = parseInt(document.getElementById('hYear').value);
+            
+            if (day && month && year) {
+                const gregorian = hijriToGregorian(day, month, year);
+                document.getElementById('hijriResult').innerHTML = `
+                    <div class="result-success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>${gregorian.day} ${gregorianMonths[gregorian.month - 1]} ${gregorian.year}</strong>
+                    </div>
+                `;
+            } else {
+                document.getElementById('hijriResult').innerHTML = `
+                    <div class="result-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Lütfen tüm alanları doldurun
+                    </div>
+                `;
+            }
+        }
+
+        function displaySpecialDays() {
+            const grid = document.getElementById('specialDaysGrid');
+            const now = new Date();
+            
+            // Sort by date
+            const sortedDays = [...specialDays].sort((a, b) => a.gregorianDate - b.gregorianDate);
+            
+            sortedDays.forEach(day => {
+                const isPast = day.gregorianDate < now;
+                const daysUntil = Math.floor((day.gregorianDate - now) / (1000 * 60 * 60 * 24));
+                
+                const card = document.createElement('div');
+                card.className = `special-day-card ${day.type} ${isPast ? 'past' : ''}`;
+                
+                let badge = '';
+                if (day.type === 'kandil') badge = '🕯️';
+                else if (day.type === 'eid') badge = '🌙';
+                else if (day.type === 'blessed') badge = '⭐';
+                else badge = '✨';
+                
+                let countdown = '';
+                if (!isPast && daysUntil >= 0) {
+                    countdown = `<div class="countdown-badge">${daysUntil} gün kaldı</div>`;
+                } else if (isPast) {
+                    countdown = '<div class="past-badge">Geçti</div>';
+                }
+                
+                card.innerHTML = `
+                    <div class="day-badge">${badge}</div>
+                    <h4>${day.name}</h4>
+                    <p class="hijri-date">${day.hijriDate}</p>
+                    <p class="gregorian-date">
+                        ${day.gregorianDate.getDate()} ${gregorianMonths[day.gregorianDate.getMonth()]} ${day.gregorianDate.getFullYear()}
+                    </p>
+                    <p class="day-description">${day.description}</p>
+                    ${countdown}
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+    </script>
+
+    <style>
+        .calendar-page {
+            min-height: 100vh;
+            background: var(--bg-color);
+            padding: 2rem 0;
+        }
+
+        .calendar-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-icon-bg {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.3);
+        }
+
+        .header-icon-bg i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .calendar-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .calendar-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Today Section */
+        .today-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .today-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 5px solid;
+        }
+
+        .today-card.gregorian {
+            border-left-color: #4A90E2;
+        }
+
+        .today-card.hijri {
+            border-left-color: #FFD700;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            color: #4A90E2;
+        }
+
+        .today-card.hijri .card-icon {
+            color: #FFD700;
+        }
+
+        .card-content h3 {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .date-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .day-name,
+        .day-info {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Converter */
+        .converter-section {
+            margin-bottom: 3rem;
+        }
+
+        .converter-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .converter-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .converter-box {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .converter-box h4 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .date-input-group {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1.5fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .date-input-group input,
+        .date-input-group select {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .btn-convert {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-convert:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .result-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+        }
+
+        .result-error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            border: 2px solid #f44336;
+        }
+
+        /* Special Days */
+        .special-days-section {
+            margin-bottom: 3rem;
+        }
+
+        .special-days-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .special-days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .special-day-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .special-day-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .special-day-card.kandil { border-left-color: #FFD700; }
+        .special-day-card.eid { border-left-color: #4CAF50; }
+        .special-day-card.blessed { border-left-color: #9C27B0; }
+        .special-day-card.special { border-left-color: #2196F3; }
+        .special-day-card.past { opacity: 0.6; }
+
+        .day-badge {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .special-day-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .hijri-date {
+            color: #FFD700;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .gregorian-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .day-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .countdown-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4CAF50;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .past-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #757575;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        /* Months */
+        .months-section {
+            margin-bottom: 3rem;
+        }
+
+        .months-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .months-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .month-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .month-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .month-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .month-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .month-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .month-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .month-badge.haram {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .month-badge.special {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+
+        .month-badge.blessed {
+            background: rgba(156, 39, 176, 0.2);
+            color: #9C27B0;
+        }
+
+        /* Kandil Info */
+        .kandil-info-section {
+            margin-bottom: 3rem;
+        }
+
+        .kandil-info-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .kandil-cards {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .kandil-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid #FFD700;
+        }
+
+        .kandil-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .kandil-card h4 {
+            color: #FFD700;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .kandil-date {
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .kandil-card p:last-child {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .calendar-header h1 {
+                font-size: 2rem;
+            }
+
+            .today-section {
+                grid-template-columns: 1fr;
+            }
+
+            .converter-container {
+                grid-template-columns: 1fr;
+            }
+
+            .date-input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .special-days-grid,
+            .months-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

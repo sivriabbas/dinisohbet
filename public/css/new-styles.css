@@ -1,0 +1,505 @@
+/* Yeni Ana Sayfa Stilleri */
+
+/* Modern Hero */
+.hero-modern {
+    background: linear-gradient(135deg, #1a4620, var(--primary-color), #2c5f2d);
+    color: var(--white);
+    padding: 5rem 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><path fill="%23ffffff05" d="M0,100 Q300,200 600,100 T1200,100 L1200,0 L0,0 Z"/></svg>');
+    background-size: cover;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-modern h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+
+.hero-search {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    background: var(--white);
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.hero-search input {
+    flex: 1;
+    padding: 1rem 2rem;
+    border: none;
+    font-size: 1.1rem;
+    outline: none;
+}
+
+.hero-search button {
+    padding: 1rem 2rem;
+    background: var(--accent-color);
+    border: none;
+    color: var(--white);
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background 0.3s;
+}
+
+.hero-search button:hover {
+    background: #c49e2f;
+}
+
+/* Hızlı Erişim Kartları */
+.quick-access {
+    padding: 4rem 0;
+    background: var(--white);
+}
+
+.quick-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.quick-card {
+    background: linear-gradient(135deg, var(--white), #f8f9fa);
+    padding: 2.5rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.quick-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    border-color: var(--primary-color);
+}
+
+.quick-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    box-shadow: 0 5px 15px rgba(44, 95, 45, 0.3);
+}
+
+.quick-card h3 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.quick-card p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.quick-card.quran .quick-icon { background: linear-gradient(135deg, #28a745, #20c997); }
+.quick-card.hadith .quick-icon { background: linear-gradient(135deg, #17a2b8, #138496); }
+.quick-card.prayer .quick-icon { background: linear-gradient(135deg, #ffc107, #ff9800); }
+.quick-card.qibla .quick-icon { background: linear-gradient(135deg, #6f42c1, #5a32a3); }
+.quick-card.dua .quick-icon { background: linear-gradient(135deg, var(--primary-color), #1a4620); }
+.quick-card.esma .quick-icon { background: linear-gradient(135deg, #d4af37, #b8941f); }
+.quick-card.guide .quick-icon { background: linear-gradient(135deg, #dc3545, #c82333); }
+.quick-card.community .quick-icon { background: linear-gradient(135deg, #007bff, #0056b3); }
+
+/* Günlük İçerik Bölümleri */
+.daily-content {
+    padding: 4rem 0;
+}
+
+.ayah-section {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.hadith-section {
+    background: var(--white);
+}
+
+.daily-card {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border-left: 5px solid var(--accent-color);
+}
+
+.daily-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.daily-header h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.daily-source {
+    background: var(--accent-color);
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.daily-arabic {
+    direction: rtl;
+    font-size: 2rem;
+    line-height: 2.5;
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    border-right: 4px solid var(--accent-color);
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.daily-turkish {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #555;
+    padding: 1.5rem;
+    background: #fff;
+    border-left: 4px solid var(--primary-color);
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+.daily-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    transition: all 0.3s;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-lg {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+/* Hadis İçeriği */
+.hadith-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.hadith-arabic {
+    direction: rtl;
+    font-size: 1.5rem;
+    line-height: 2.2;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    border-right: 4px solid #17a2b8;
+}
+
+.hadith-turkish {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+    padding: 1.5rem;
+    background: #fff;
+    border-left: 4px solid var(--secondary-color);
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+/* Popüler Dualar Vitrini */
+.popular-duas {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #f0f8f0, #e8f5e9);
+}
+
+.section-title {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+}
+
+.duas-showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.dua-showcase-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    border-top: 4px solid var(--accent-color);
+}
+
+.dua-showcase-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.dua-showcase-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.dua-preview-arabic {
+    direction: rtl;
+    font-size: 1.2rem;
+    line-height: 2;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.dua-preview-turkish {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+/* Esma-ül Hüsna Vurgu */
+.esma-highlight {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #fff9e6, #fef5d4);
+}
+
+.esma-card-featured {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+    border: 3px solid var(--accent-color);
+    position: relative;
+}
+
+.esma-number {
+    position: absolute;
+    top: -30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: var(--accent-color);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+.esma-content h2 {
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+.esma-arabic {
+    direction: rtl;
+    font-size: 2.5rem;
+    text-align: center;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.esma-transliteration {
+    text-align: center;
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.esma-meaning {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+    text-align: center;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+.esma-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Topluluk Paylaşımları */
+.community-posts {
+    padding: 4rem 0;
+    background: var(--white);
+}
+
+/* İstatistikler */
+.stats-section {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, var(--primary-color), #1a4620);
+    color: var(--white);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 2rem;
+}
+
+.stat-card i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Yardımcı Sınıflar */
+.text-center {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Responsive İyileştirmeler */
+@media (max-width: 768px) {
+    .hero-modern h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .quick-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .quick-card {
+        padding: 1.5rem;
+    }
+    
+    .quick-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+    
+    .daily-arabic {
+        font-size: 1.5rem;
+        padding: 1rem;
+    }
+    
+    .daily-card {
+        padding: 1.5rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .quick-cards {
+        grid-template-columns: 1fr;
+    }
+}

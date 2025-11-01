@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dua Ekle - Dini Sohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="form-container">
+                <h1>Yeni Dua Ekle</h1>
+                
+                <% if (error) { %>
+                    <div class="alert alert-error">
+                        <%= error %>
+                    </div>
+                <% } %>
+
+                <form action="/duas/new" method="POST" class="dua-form">
+                    <div class="form-group">
+                        <label for="title">Dua Başlığı</label>
+                        <input type="text" id="title" name="title" required maxlength="200" placeholder="Örn: Sabah Duası">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Kategori</label>
+                        <select id="category" name="category">
+                            <option value="genel">Genel</option>
+                            <option value="sabah">Sabah</option>
+                            <option value="aksam">Akşam</option>
+                            <option value="yemek">Yemek</option>
+                            <option value="yolculuk">Yolculuk</option>
+                            <option value="hasta">Hasta</option>
+                            <option value="tesbihat">Tesbihat</option>
+                            <option value="diğer">Diğer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="arabicText">Arapça Metin</label>
+                        <textarea id="arabicText" name="arabicText" required maxlength="2000" rows="4" class="arabic-text"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="turkishText">Okunuşu (Türkçe)</label>
+                        <textarea id="turkishText" name="turkishText" required maxlength="2000" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="meaning">Anlamı</label>
+                        <textarea id="meaning" name="meaning" required maxlength="2000" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="source">Kaynak (Opsiyonel)</label>
+                        <input type="text" id="source" name="source" maxlength="500" placeholder="Örn: Buhari, Müslim">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Duayı Ekle</button>
+                        <a href="/duas" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= video.title %> - DiniSohbet</title>
+    <%- include('../partials/head') %>
+    <style>
+        .video-player-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .video-player {
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .video-player video,
+        .video-player audio {
+            width: 100%;
+            max-height: 600px;
+        }
+        
+        .video-details {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .video-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .video-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .action-btn.liked {
+            background: var(--error-color);
+            color: white;
+        }
+        
+        .video-meta-info {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            color: #777;
+            margin-top: 1rem;
+        }
+        
+        .related-videos {
+            margin-top: 2rem;
+        }
+        
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .related-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .related-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .related-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .related-card-info {
+            padding: 1rem;
+        }
+        
+        .related-card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    
+    <div class="video-player-container">
+        <!-- Video Player -->
+        <div class="video-player">
+            <% if (video.type === 'video') { %>
+            <video id="videoPlayer" controls controlsList="nodownload">
+                <source src="<%= video.videoUrl %>" type="video/mp4">
+                Tarayıcınız video oynatmayı desteklemiyor.
+            </video>
+            <% } else { %>
+            <audio id="audioPlayer" controls style="width: 100%; background: #333; padding: 2rem;">
+                <source src="<%= video.videoUrl %>" type="audio/mpeg">
+                Tarayıcınız ses oynatmayı desteklemiyor.
+            </audio>
+            <% } %>
+        </div>
+        
+        <!-- Video Details -->
+        <div class="video-details">
+            <div class="video-header">
+                <div>
+                    <h1><%= video.title %></h1>
+                    <% if (video.speaker) { %>
+                    <p style="color: var(--primary-color); font-size: 1.1rem; margin-top: 0.5rem;">
+                        <i class="fas fa-user"></i> <%= video.speaker %>
+                    </p>
+                    <% } %>
+                </div>
+                
+                <div class="video-actions">
+                    <button class="action-btn <%= isLiked ? 'liked' : '' %>" onclick="toggleLike()">
+                        <i class="fas fa-heart"></i>
+                        <span id="likeCount"><%= video.likes.length %></span>
+                    </button>
+                    <button class="action-btn" onclick="shareVideo()">
+                        <i class="fas fa-share"></i>
+                        Paylaş
+                    </button>
+                </div>
+            </div>
+            
+            <div class="video-meta-info">
+                <span><i class="fas fa-eye"></i> <%= video.views %> görüntülenme</span>
+                <span><i class="fas fa-calendar"></i> <%= new Date(video.createdAt).toLocaleDateString('tr-TR') %></span>
+                <span><i class="fas fa-folder"></i> <%= video.category %></span>
+                <% if (video.playlist) { %>
+                <span><i class="fas fa-list"></i> Oynatma Listesi: <%= video.playlist.title %></span>
+                <% } %>
+            </div>
+            
+            <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border-color);">
+            
+            <div class="video-description">
+                <p><%= video.description %></p>
+            </div>
+            
+            <% if (video.tags && video.tags.length > 0) { %>
+            <div style="margin-top: 1.5rem;">
+                <% video.tags.forEach(tag => { %>
+                <span style="display: inline-block; background: var(--bg-color); padding: 0.25rem 0.75rem; border-radius: 15px; margin-right: 0.5rem; margin-bottom: 0.5rem;">
+                    #<%= tag %>
+                </span>
+                <% }) %>
+            </div>
+            <% } %>
+        </div>
+        
+        <!-- Related Videos -->
+        <% if (relatedVideos && relatedVideos.length > 0) { %>
+        <div class="related-videos">
+            <h2>İlgili İçerikler</h2>
+            <div class="related-grid">
+                <% relatedVideos.forEach(related => { %>
+                <div class="related-card" onclick="window.location.href='/videos/<%= related._id %>'">
+                    <img src="<%= related.thumbnailUrl %>" alt="<%= related.title %>">
+                    <div class="related-card-info">
+                        <h3 class="related-card-title"><%= related.title %></h3>
+                        <% if (related.speaker) { %>
+                        <p style="color: #777; font-size: 0.9rem; margin-top: 0.5rem;">
+                            <%= related.speaker %>
+                        </p>
+                        <% } %>
+                        <p style="color: #777; font-size: 0.85rem; margin-top: 0.5rem;">
+                            <i class="fas fa-eye"></i> <%= related.views %>
+                        </p>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    
+    <%- include('../partials/footer') %>
+    
+    <script>
+        let isLiked = <%= isLiked %>;
+        
+        async function toggleLike() {
+            try {
+                const response = await fetch('/videos/<%= video._id %>/like', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('likeCount').textContent = data.likes;
+                    isLiked = data.isLiked;
+                    
+                    const btn = document.querySelector('.action-btn');
+                    if (isLiked) {
+                        btn.classList.add('liked');
+                    } else {
+                        btn.classList.remove('liked');
+                    }
+                } else if (response.status === 401) {
+                    window.location.href = '/auth/login';
+                }
+            } catch (error) {
+                console.error('Beğeni hatası:', error);
+            }
+        }
+        
+        function shareVideo() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '<%= video.title %>',
+                    text: '<%= video.description.substring(0, 100) %>...',
+                    url: window.location.href
+                }).catch(err => console.log('Paylaşım iptal edildi'));
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link panoya kopyalandı!');
+            }
+        }
+        
+        // Video/audio izleme süresini kaydet
+        const player = document.getElementById('<%= video.type %>Player');
+        if (player) {
+            player.addEventListener('timeupdate', () => {
+                const watchTime = Math.floor(player.currentTime);
+                if (watchTime > 0 && watchTime % 30 === 0) {
+                    // Her 30 saniyede bir kaydet
+                    localStorage.setItem('video_<%= video._id %>', watchTime);
+                }
+            });
+            
+            // Son kaldığı yerden devam et
+            const savedTime = localStorage.getItem('video_<%= video._id %>');
+            if (savedTime && savedTime > 0) {
+                player.currentTime = savedTime;
+            }
+        }
+    </script>
+</body>
+</html>

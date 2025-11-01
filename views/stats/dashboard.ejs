@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İstatistiklerim - DiniSohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="stats-page">
+        <!-- Başlık -->
+        <div class="stats-header">
+            <div class="header-icon-bg">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h1>İstatistiklerim</h1>
+            <p class="stats-subtitle">İbadet ve aktivite istatistikleriniz</p>
+        </div>
+
+        <div class="container">
+            <!-- Genel Durum Kartları -->
+            <div class="overview-section">
+                <div class="stat-card primary">
+                    <div class="stat-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Mevcut Seri</h3>
+                        <p class="stat-value"><%= stats.overallStreak.current %></p>
+                        <p class="stat-label">gün ardışık</p>
+                    </div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i class="fas fa-book-quran"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Kuran</h3>
+                        <p class="stat-value"><%= stats.quran.totalAyahsRead %></p>
+                        <p class="stat-label">ayet okundu</p>
+                    </div>
+                </div>
+
+                <div class="stat-card info">
+                    <div class="stat-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Hadis</h3>
+                        <p class="stat-value"><%= stats.hadith.totalRead %></p>
+                        <p class="stat-label">hadis okundu</p>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-hand-sparkles"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Zikir</h3>
+                        <p class="stat-value"><%= stats.dhikr.totalCount %></p>
+                        <p class="stat-label">toplam zikir</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detaylı İstatistikler -->
+            <div class="details-grid">
+                <!-- Kuran İstatistikleri -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-book-quran"></i>
+                        <h3>Kuran İstatistikleri</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-row">
+                            <span class="stat-label">Toplam Ayet:</span>
+                            <span class="stat-value"><%= stats.quran.totalAyahsRead %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Okunan Sure:</span>
+                            <span class="stat-value"><%= stats.quran.totalSurahsRead %> / 114</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Okuma Serisi:</span>
+                            <span class="stat-value"><%= stats.quran.readingStreak || 0 %> gün</span>
+                        </div>
+                        <% if (stats.quran.lastReadSurah) { %>
+                        <div class="stat-row">
+                            <span class="stat-label">Son Okunan:</span>
+                            <span class="stat-value">Sure <%= stats.quran.lastReadSurah %>:<%= stats.quran.lastReadAyah || 1 %></span>
+                        </div>
+                        <% } %>
+                        <div class="progress-bar-container">
+                            <div class="progress-label">
+                                <span>İlerleme</span>
+                                <span><%= Math.round((stats.quran.totalSurahsRead / 114) * 100) %>%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: <%= (stats.quran.totalSurahsRead / 114) * 100 %>%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hadis İstatistikleri -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-book"></i>
+                        <h3>Hadis İstatistikleri</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-row">
+                            <span class="stat-label">Toplam Hadis:</span>
+                            <span class="stat-value"><%= stats.hadith.totalRead %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Buhari:</span>
+                            <span class="stat-value"><%= stats.hadith.buhari || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Müslim:</span>
+                            <span class="stat-value"><%= stats.hadith.muslim || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Ebu Davud:</span>
+                            <span class="stat-value"><%= stats.hadith.abuDawud || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Tirmizi:</span>
+                            <span class="stat-value"><%= stats.hadith.tirmidhi || 0 %></span>
+                        </div>
+                        <canvas id="hadithChart" style="max-height: 200px;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Zikir İstatistikleri -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-hand-sparkles"></i>
+                        <h3>Zikir İstatistikleri</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-row">
+                            <span class="stat-label">Bugün:</span>
+                            <span class="stat-value"><%= stats.dhikr.todayCount || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Bu Hafta:</span>
+                            <span class="stat-value"><%= stats.dhikr.weekCount || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Toplam:</span>
+                            <span class="stat-value"><%= stats.dhikr.totalCount %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Seri:</span>
+                            <span class="stat-value"><%= stats.dhikr.streak || 0 %> gün</span>
+                        </div>
+                        <div class="big-number">
+                            <div class="big-number-value"><%= stats.dhikr.totalCount.toLocaleString('tr-TR') %></div>
+                            <div class="big-number-label">Toplam Zikir</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hedefler İstatistikleri -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-bullseye"></i>
+                        <h3>Hedefler</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-row">
+                            <span class="stat-label">Toplam Hedef:</span>
+                            <span class="stat-value"><%= stats.goals.totalCreated || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Tamamlanan:</span>
+                            <span class="stat-value"><%= stats.goals.totalCompleted || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Aktif Hedef:</span>
+                            <span class="stat-value"><%= stats.goals.activeGoals || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Başarı Oranı:</span>
+                            <span class="stat-value"><%= Math.round(stats.goals.completionRate || 0) %>%</span>
+                        </div>
+                        <% if (activeGoals && activeGoals.length > 0) { %>
+                        <div class="active-goals-mini">
+                            <h4>Aktif Hedefler:</h4>
+                            <% activeGoals.forEach(goal => { %>
+                            <div class="mini-goal">
+                                <span><%= goal.title %></span>
+                                <span class="progress-percent"><%= Math.round((goal.currentValue / goal.targetValue) * 100) %>%</span>
+                            </div>
+                            <% }) %>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Sosyal İstatistikler -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-comments"></i>
+                        <h3>Sosyal Aktivite</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-row">
+                            <span class="stat-label">Paylaşımlar:</span>
+                            <span class="stat-value"><%= stats.social.totalPosts || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Yorumlar:</span>
+                            <span class="stat-value"><%= stats.social.totalComments || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Beğeniler:</span>
+                            <span class="stat-value"><%= stats.social.totalLikes || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Takipçi:</span>
+                            <span class="stat-value"><%= stats.social.followers || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Takip:</span>
+                            <span class="stat-value"><%= stats.social.following || 0 %></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diğer İstatistikler -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Diğer Aktiviteler</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-row">
+                            <span class="stat-label">Dua Okuma:</span>
+                            <span class="stat-value"><%= stats.duas.totalRead || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Namaz Kontrolü:</span>
+                            <span class="stat-value"><%= stats.prayer.totalChecks || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Esma Dinleme:</span>
+                            <span class="stat-value"><%= stats.esma.totalListened || 0 %></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">En Uzun Seri:</span>
+                            <span class="stat-value"><%= stats.overallStreak.longest || 0 %> gün</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Başarı Rozetleri -->
+            <div class="badges-section">
+                <h3><i class="fas fa-medal"></i> Başarı Rozetleri</h3>
+                <div class="badges-grid">
+                    <% 
+                    const badgeInfo = {
+                        'first_quran': { icon: '📖', name: 'İlk Kuran', desc: 'İlk ayeti okudunuz' },
+                        'first_hadith': { icon: '📚', name: 'İlk Hadis', desc: 'İlk hadisi okudunuz' },
+                        'streak_7': { icon: '🔥', name: '7 Gün Serisi', desc: '7 gün ardışık aktivite' },
+                        'streak_30': { icon: '🔥🔥', name: '30 Gün Serisi', desc: '30 gün ardışık aktivite' },
+                        'streak_100': { icon: '🔥🔥🔥', name: '100 Gün Serisi', desc: '100 gün ardışık aktivite' },
+                        'quran_100': { icon: '📗', name: '100 Ayet', desc: '100 ayet okudunuz' },
+                        'quran_1000': { icon: '📘', name: '1000 Ayet', desc: '1000 ayet okudunuz' },
+                        'hadith_100': { icon: '📙', name: '100 Hadis', desc: '100 hadis okudunuz' },
+                        'dhikr_1000': { icon: '🤲', name: '1000 Zikir', desc: '1000 zikir yaptınız' },
+                        'dhikr_10000': { icon: '🤲✨', name: '10000 Zikir', desc: '10000 zikir yaptınız' },
+                        'goal_master': { icon: '🎯', name: 'Hedef Ustası', desc: '50 hedef tamamladınız' },
+                        'social_butterfly': { icon: '💬', name: 'Sosyal Kelebek', desc: '100 paylaşım yaptınız' },
+                        'helper': { icon: '🤝', name: 'Yardımsever', desc: '100 yorum yaptınız' },
+                        'quran_complete': { icon: '🏆', name: 'Hatim', desc: 'Kuran\'ı tamamladınız' }
+                    };
+                    
+                    const earnedBadges = stats.badges.map(b => b.type);
+                    Object.keys(badgeInfo).forEach(badgeType => {
+                        const badge = badgeInfo[badgeType];
+                        const earned = earnedBadges.includes(badgeType);
+                    %>
+                    <div class="badge-card <%= earned ? 'earned' : 'locked' %>">
+                        <div class="badge-icon"><%= badge.icon %></div>
+                        <h4><%= badge.name %></h4>
+                        <p><%= badge.desc %></p>
+                        <% if (earned) { %>
+                        <span class="badge-status earned">✓ Kazanıldı</span>
+                        <% } else { %>
+                        <span class="badge-status locked">🔒 Kilitli</span>
+                        <% } %>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+
+            <!-- Aktivite Takvimi (Heatmap) -->
+            <div class="heatmap-section">
+                <h3><i class="fas fa-calendar-alt"></i> Son 30 Gün Aktivite</h3>
+                <div class="heatmap-container">
+                    <% 
+                    const days = [];
+                    for (let i = 29; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        const dateKey = date.toISOString().split('T')[0];
+                        const count = activityByDay[dateKey] || 0;
+                        const level = count === 0 ? 0 : count < 5 ? 1 : count < 10 ? 2 : count < 20 ? 3 : 4;
+                        days.push({ date: dateKey, count, level, dayName: date.toLocaleDateString('tr-TR', { weekday: 'short' }) });
+                    }
+                    %>
+                    <div class="heatmap-grid">
+                        <% days.forEach(day => { %>
+                        <div class="heatmap-cell level-<%= day.level %>" 
+                             title="<%= day.date %>: <%= day.count %> aktivite">
+                            <span class="cell-day"><%= day.dayName %></span>
+                        </div>
+                        <% }) %>
+                    </div>
+                    <div class="heatmap-legend">
+                        <span>Daha Az</span>
+                        <div class="legend-cell level-0"></div>
+                        <div class="legend-cell level-1"></div>
+                        <div class="legend-cell level-2"></div>
+                        <div class="legend-cell level-3"></div>
+                        <div class="legend-cell level-4"></div>
+                        <span>Daha Çok</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Son Aktiviteler Timeline -->
+            <div class="timeline-section">
+                <h3><i class="fas fa-history"></i> Son Aktiviteler</h3>
+                <div class="timeline">
+                    <% if (recentActivities && recentActivities.length > 0) { %>
+                        <% recentActivities.slice(0, 20).forEach(activity => { 
+                            const typeLabels = {
+                                'quran_read': 'Kuran okuma',
+                                'hadith_read': 'Hadis okuma',
+                                'dua_read': 'Dua okuma',
+                                'prayer_check': 'Namaz vakti kontrolü',
+                                'dhikr_count': 'Zikir',
+                                'goal_complete': 'Hedef tamamlama',
+                                'post_create': 'Paylaşım',
+                                'comment_create': 'Yorum',
+                                'note_create': 'Not oluşturma',
+                                'esma_listen': 'Esma dinleme'
+                            };
+                            const typeIcons = {
+                                'quran_read': 'fa-book-quran',
+                                'hadith_read': 'fa-book',
+                                'dua_read': 'fa-praying-hands',
+                                'prayer_check': 'fa-clock',
+                                'dhikr_count': 'fa-hand-sparkles',
+                                'goal_complete': 'fa-bullseye',
+                                'post_create': 'fa-pen',
+                                'comment_create': 'fa-comment',
+                                'note_create': 'fa-sticky-note',
+                                'esma_listen': 'fa-music'
+                            };
+                        %>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas <%= typeIcons[activity.type] || 'fa-circle' %>"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4><%= typeLabels[activity.type] || activity.type %></h4>
+                                <p class="timeline-time"><%= new Date(activity.date).toLocaleString('tr-TR') %></p>
+                            </div>
+                        </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="no-activity">Henüz aktivite bulunmuyor</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        // Hadis dağılım grafiği
+        const hadithData = {
+            buhari: <%= stats.hadith.buhari || 0 %>,
+            muslim: <%= stats.hadith.muslim || 0 %>,
+            abuDawud: <%= stats.hadith.abuDawud || 0 %>,
+            tirmidhi: <%= stats.hadith.tirmidhi || 0 %>,
+            nasai: <%= stats.hadith.nasai || 0 %>,
+            ibnMajah: <%= stats.hadith.ibnMajah || 0 %>
+        };
+
+        const ctx = document.getElementById('hadithChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Buhari', 'Müslim', 'Ebu Davud', 'Tirmizi', 'Nesai', 'İbn Mace'],
+                    datasets: [{
+                        data: Object.values(hadithData),
+                        backgroundColor: [
+                            '#4CAF50',
+                            '#2196F3',
+                            '#FF9800',
+                            '#9C27B0',
+                            '#F44336',
+                            '#00BCD4'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .stats-page {
+            min-height: 100vh;
+            background: var(--bg-color);
+            padding: 2rem 0;
+        }
+
+        .stats-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-icon-bg {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .header-icon-bg i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .stats-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stats-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Overview Cards */
+        .overview-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 5px solid;
+        }
+
+        .stat-card.primary { border-left-color: #FF6B6B; }
+        .stat-card.success { border-left-color: #4CAF50; }
+        .stat-card.info { border-left-color: #2196F3; }
+        .stat-card.warning { border-left-color: #FF9800; }
+
+        .stat-icon {
+            font-size: 3rem;
+        }
+
+        .stat-card.primary .stat-icon { color: #FF6B6B; }
+        .stat-card.success .stat-icon { color: #4CAF50; }
+        .stat-card.info .stat-icon { color: #2196F3; }
+        .stat-card.warning .stat-icon { color: #FF9800; }
+
+        .stat-content h3 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Detail Cards */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .detail-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-row .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-row .stat-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .progress-bar-container {
+            margin-top: 1rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s;
+        }
+
+        .big-number {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .big-number-value {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FF9800, #FF5722);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .big-number-label {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .active-goals-mini {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .active-goals-mini h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .mini-goal {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.85rem;
+        }
+
+        .progress-percent {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        /* Badges */
+        .badges-section {
+            margin-bottom: 3rem;
+        }
+
+        .badges-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .badge-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .badge-card.earned {
+            border: 2px solid #FFD700;
+        }
+
+        .badge-card.locked {
+            opacity: 0.5;
+            filter: grayscale(100%);
+        }
+
+        .badge-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .badge-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .badge-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .badge-card p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-status.earned {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .badge-status.locked {
+            background: rgba(158, 158, 158, 0.2);
+            color: #9E9E9E;
+        }
+
+        /* Heatmap */
+        .heatmap-section {
+            margin-bottom: 3rem;
+        }
+
+        .heatmap-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .heatmap-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+        }
+
+        .cell-day {
+            font-size: 0.6rem;
+            opacity: 0.7;
+        }
+
+        .heatmap-cell.level-0 { background: var(--border-color); }
+        .heatmap-cell.level-1 { background: #C6E48B; }
+        .heatmap-cell.level-2 { background: #7BC96F; }
+        .heatmap-cell.level-3 { background: #239A3B; }
+        .heatmap-cell.level-4 { background: #196127; }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-cell {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+
+        .legend-cell.level-0 { background: var(--border-color); }
+        .legend-cell.level-1 { background: #C6E48B; }
+        .legend-cell.level-2 { background: #7BC96F; }
+        .legend-cell.level-3 { background: #239A3B; }
+        .legend-cell.level-4 { background: #196127; }
+
+        /* Timeline */
+        .timeline-section {
+            margin-bottom: 3rem;
+        }
+
+        .timeline-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .timeline {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-left: 2px solid var(--border-color);
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: -12px;
+            width: 24px;
+            height: 24px;
+            background: var(--card-bg);
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 0.75rem;
+        }
+
+        .timeline-content h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .timeline-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .no-activity {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-header h1 {
+                font-size: 2rem;
+            }
+
+            .overview-section {
+                grid-template-columns: 1fr;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .heatmap-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+
+            .badges-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dualar - Dini Sohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-praying-hands"></i> Dua Koleksiyonu</h1>
+                <% if (user) { %>
+                    <a href="/duas/new" class="btn btn-primary"><i class="fas fa-plus"></i> Dua Ekle</a>
+                <% } %>
+            </div>
+
+            <!-- Kategori Filtreleri -->
+            <div class="filters">
+                <div class="category-filter">
+                    <a href="/duas?category=all" class="filter-btn <%= category === 'all' ? 'active' : '' %>">Tümü</a>
+                    <a href="/duas?category=sabah" class="filter-btn <%= category === 'sabah' ? 'active' : '' %>">Sabah</a>
+                    <a href="/duas?category=aksam" class="filter-btn <%= category === 'aksam' ? 'active' : '' %>">Akşam</a>
+                    <a href="/duas?category=yemek" class="filter-btn <%= category === 'yemek' ? 'active' : '' %>">Yemek</a>
+                    <a href="/duas?category=yolculuk" class="filter-btn <%= category === 'yolculuk' ? 'active' : '' %>">Yolculuk</a>
+                    <a href="/duas?category=hasta" class="filter-btn <%= category === 'hasta' ? 'active' : '' %>">Hasta</a>
+                    <a href="/duas?category=tesbihat" class="filter-btn <%= category === 'tesbihat' ? 'active' : '' %>">Tesbihat</a>
+                    <a href="/duas?category=genel" class="filter-btn <%= category === 'genel' ? 'active' : '' %>">Genel</a>
+                </div>
+            </div>
+
+            <!-- Dualar -->
+            <% if (duas && duas.length > 0) { %>
+                <div class="duas-grid">
+                    <% duas.forEach(dua => { %>
+                        <div class="dua-card">
+                            <h3><a href="/duas/<%= dua._id %>"><%= dua.title %></a></h3>
+                            <div class="dua-arabic">
+                                <%= dua.arabicText.substring(0, 100) %>...
+                            </div>
+                            <div class="dua-turkish">
+                                <%= dua.turkishText.substring(0, 100) %>...
+                            </div>
+                            <div class="dua-footer">
+                                <span class="dua-category <%= dua.category %>"><%= dua.category %></span>
+                                <span><i class="fas fa-eye"></i> <%= dua.viewCount %></span>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <p class="no-posts">Bu kategoride henüz dua eklenmemiş.</p>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

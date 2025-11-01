@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hadis-i Şerifler</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <div class="header-icon">
+                    <i class="fas fa-book-quran"></i>
+                </div>
+                <h1>Hadis-i Şerifler</h1>
+                <p class="subtitle">Kütüb-i Sitte ve Diğer Hadis Kitaplarından Seçmeler</p>
+            </div>
+
+            <!-- İstatistikler -->
+            <div class="hadith-stats">
+                <div class="stat-card">
+                    <i class="fas fa-book"></i>
+                    <div class="stat-info">
+                        <span class="stat-number"><%= hadiths.length %></span>
+                        <span class="stat-label">Hadis</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-books"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">7</span>
+                        <span class="stat-label">Kaynak</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-tags"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">8</span>
+                        <span class="stat-label">Kategori</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtreler -->
+            <div class="hadith-filters">
+                <div class="filter-section">
+                    <h3><i class="fas fa-filter"></i> Filtrele</h3>
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label><i class="fas fa-book"></i> Kaynak</label>
+                            <select id="sourceFilter" class="filter-select">
+                                <option value="all">Tüm Kaynaklar</option>
+                                <option value="Buhari" <%= source === 'Buhari' ? 'selected' : '' %>>Buhari</option>
+                                <option value="Müslim" <%= source === 'Müslim' ? 'selected' : '' %>>Müslim</option>
+                                <option value="Ebu Davud" <%= source === 'Ebu Davud' ? 'selected' : '' %>>Ebu Davud</option>
+                                <option value="Tirmizi" <%= source === 'Tirmizi' ? 'selected' : '' %>>Tirmizi</option>
+                                <option value="Nesai" <%= source === 'Nesai' ? 'selected' : '' %>>Nesai</option>
+                                <option value="İbn Mace" <%= source === 'İbn Mace' ? 'selected' : '' %>>İbn Mace</option>
+                                <option value="Muvatta" <%= source === 'Muvatta' ? 'selected' : '' %>>Muvatta</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-tags"></i> Kategori</label>
+                            <select id="categoryFilter" class="filter-select">
+                                <option value="all">Tüm Kategoriler</option>
+                                <option value="iman" <%= category === 'iman' ? 'selected' : '' %>>İman</option>
+                                <option value="ibadet" <%= category === 'ibadet' ? 'selected' : '' %>>İbadet</option>
+                                <option value="ahlak" <%= category === 'ahlak' ? 'selected' : '' %>>Ahlak</option>
+                                <option value="muamelat" <%= category === 'muamelat' ? 'selected' : '' %>>Muamelat</option>
+                                <option value="edeb" <%= category === 'edeb' ? 'selected' : '' %>>Edeb</option>
+                                <option value="ilim" <%= category === 'ilim' ? 'selected' : '' %>>İlim</option>
+                                <option value="cihad" <%= category === 'cihad' ? 'selected' : '' %>>Cihad</option>
+                                <option value="diğer" <%= category === 'diğer' ? 'selected' : '' %>>Diğer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="applyFilters" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Filtreyi Uygula
+                    </button>
+                </div>
+            </div>
+
+            <div class="hadiths-list">
+                <% if (hadiths && hadiths.length > 0) { %>
+                    <% hadiths.forEach((hadith, index) => { %>
+                        <div class="hadith-card" data-aos="fade-up" data-aos-delay="<%= index * 50 %>">
+                            <div class="hadith-number">#<%= index + 1 %></div>
+                            
+                            <h3 class="hadith-title">
+                                <i class="fas fa-star"></i>
+                                <%= hadith.title %>
+                            </h3>
+                            
+                            <div class="hadith-meta">
+                                <span class="source-badge <%= hadith.source.toLowerCase() %>">
+                                    <i class="fas fa-book"></i> <%= hadith.source %>
+                                </span>
+                                <span class="category-badge">
+                                    <i class="fas fa-tag"></i> <%= hadith.category.charAt(0).toUpperCase() + hadith.category.slice(1) %>
+                                </span>
+                                <% if (hadith.hadithNumber) { %>
+                                    <span class="hadith-ref">
+                                        <i class="fas fa-hashtag"></i> <%= hadith.hadithNumber %>
+                                    </span>
+                                <% } %>
+                            </div>
+                            
+                            <% if (hadith.arabicText) { %>
+                                <div class="hadith-arabic">
+                                    <%= hadith.arabicText %>
+                                </div>
+                            <% } %>
+                            
+                            <div class="hadith-turkish">
+                                <%= hadith.turkishText %>
+                            </div>
+                            
+                            <div class="hadith-actions">
+                                <button class="action-btn btn-favorite" data-id="<%= hadith._id %>" title="Favorilere Ekle">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                                <button class="action-btn btn-share" title="Paylaş">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="action-btn btn-copy" data-text="<%= hadith.turkishText %>" title="Kopyala">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-content">
+                        <i class="fas fa-search"></i>
+                        <h3>Hadis Bulunamadı</h3>
+                        <p>Seçtiğiniz filtrelere uygun hadis bulunmamaktadır.</p>
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (totalPages > 1) { %>
+                <div class="pagination">
+                    <% if (currentPage > 1) { %>
+                        <a href="?page=<%= currentPage - 1 %><%= selectedSource ? '&source=' + selectedSource : '' %><%= selectedCategory ? '&category=' + selectedCategory : '' %>" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Önceki
+                        </a>
+                    <% } %>
+                    
+                    <span class="page-info">Sayfa <%= currentPage %> / <%= totalPages %></span>
+                    
+                    <% if (currentPage < totalPages) { %>
+                        <a href="?page=<%= currentPage + 1 %><%= selectedSource ? '&source=' + selectedSource : '' %><%= selectedCategory ? '&category=' + selectedCategory : '' %>" class="btn btn-secondary">
+                            Sonraki <i class="fas fa-arrow-right"></i>
+                        </a>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filtre değişikliklerini dinle
+            document.getElementById('sourceFilter').addEventListener('change', filterHadiths);
+            document.getElementById('categoryFilter').addEventListener('change', filterHadiths);
+            
+            function filterHadiths() {
+                const source = document.getElementById('sourceFilter').value;
+                const category = document.getElementById('categoryFilter').value;
+                let url = '/hadiths?';
+                if (source) url += `source=${source}&`;
+                if (category) url += `category=${category}&`;
+                window.location.href = url;
+            }
+
+            // Favori butonları
+            document.querySelectorAll('.btn-favorite').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const hadithId = this.dataset.id;
+                    const icon = this.querySelector('i');
+                    
+                    if (icon.classList.contains('far')) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        this.style.color = '#e74c3c';
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        this.style.color = '#999';
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .hadith-filters {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .filter-group select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .hadiths-list {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .hadith-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .hadith-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .hadith-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hadith-source {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .hadith-category {
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .btn-favorite {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-favorite:hover {
+            transform: scale(1.2);
+        }
+
+        .hadith-arabic {
+            direction: rtl;
+            font-size: 1.5rem;
+            line-height: 2.5;
+            color: #2c3e50;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hadith-turkish {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #333;
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .hadith-explanation {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #fff3cd;
+            border-radius: 8px;
+        }
+
+        .hadith-explanation h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        // Filter işlemleri
+        document.getElementById('applyFilters').addEventListener('click', () => {
+            const source = document.getElementById('sourceFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            
+            let url = '/hadiths?';
+            if (source !== 'all') url += `source=${source}&`;
+            if (category !== 'all') url += `category=${category}&`;
+            
+            window.location.href = url;
+        });
+
+        // Favori işlemleri
+        document.querySelectorAll('.btn-favorite').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const hadithId = this.dataset.id;
+                const icon = this.querySelector('i');
+                
+                try {
+                    const response = await fetch(`/hadiths/${hadithId}/favorite`, {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        icon.classList.toggle('far');
+                        icon.classList.toggle('fas');
+                        icon.style.color = icon.classList.contains('fas') ? '#e74c3c' : '#999';
+                    }
+                } catch (error) {
+                    console.error('Favorite error:', error);
+                }
+            });
+        });
+
+        // Kopyalama
+        document.querySelectorAll('.btn-copy').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const text = this.dataset.text;
+                navigator.clipboard.writeText(text).then(() => {
+                    const icon = this.querySelector('i');
+                    icon.className = 'fas fa-check';
+                    setTimeout(() => {
+                        icon.className = 'fas fa-copy';
+                    }, 2000);
+                });
+            });
+        });
+
+        // Paylaşım
+        document.querySelectorAll('.btn-share').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (navigator.share) {
+                    const card = this.closest('.hadith-card');
+                    const title = card.querySelector('.hadith-title').textContent.trim();
+                    const text = card.querySelector('.hadith-turkish').textContent.trim();
+                    
+                    navigator.share({
+                        title: title,
+                        text: text,
+                        url: window.location.href
+                    });
+                } else {
+                    alert('Tarayıcınız paylaşım özelliğini desteklemiyor.');
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #8b4513, #d2691e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 8px 24px rgba(139, 69, 19, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* İstatistikler */
+        .hadith-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Filtreler */
+        .hadith-filters {
+            margin-bottom: 3rem;
+        }
+
+        .filter-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .filter-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-select {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Hadis Kartları */
+        .hadiths-list {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .hadith-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border-left: 5px solid var(--primary-color);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .hadith-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .hadith-number {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .hadith-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-right: 50px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hadith-title i {
+            color: #f39c12;
+        }
+
+        .hadith-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .source-badge, .category-badge, .hadith-ref {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .source-badge.buhari { background: linear-gradient(135deg, #8b4513, #d2691e); color: white; }
+        .source-badge.müslim { background: linear-gradient(135deg, #16a085, #1abc9c); color: white; }
+        .source-badge.ebu { background: linear-gradient(135deg, #2980b9, #3498db); color: white; }
+        .source-badge.tirmizi { background: linear-gradient(135deg, #8e44ad, #9b59b6); color: white; }
+        .source-badge.nesai { background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; }
+        .source-badge.İbn { background: linear-gradient(135deg, #f39c12, #f1c40f); color: white; }
+        .source-badge.muvatta { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+        .source-badge { background: linear-gradient(135deg, #34495e, #95a5a6); color: white; }
+
+        .category-badge {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .hadith-ref {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+        }
+
+        .hadith-arabic {
+            direction: rtl;
+            font-family: 'Traditional Arabic', 'Amiri', serif;
+            font-size: 1.8rem;
+            line-height: 2.5;
+            color: var(--text-color);
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .hadith-turkish {
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: var(--text-color);
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.1));
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #27ae60;
+        }
+
+        .hadith-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .action-btn {
+            background: var(--bg-secondary);
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-favorite:hover {
+            background: #e74c3c;
+        }
+
+        .btn-share:hover {
+            background: #3498db;
+        }
+
+        .btn-copy:hover {
+            background: #16a085;
+        }
+
+        /* No Content */
+        .no-content {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .no-content i {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .no-content h3 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .no-content p {
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hadith-card {
+                padding: 1.5rem;
+            }
+
+            .hadith-arabic {
+                font-size: 1.5rem;
+            }
+
+            .hadith-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</body>
+</html>

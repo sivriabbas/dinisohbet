@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= surah.name %> Suresi - Kuran-ı Kerim</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/new-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Arabic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="surah-detail">
+                <!-- Font Ayarları Paneli -->
+                <div class="font-settings-panel">
+                    <button id="font-settings-toggle" class="font-settings-btn">
+                        <i class="fas fa-text-height"></i> Font Ayarları
+                    </button>
+                    <div id="font-settings-content" class="font-settings-content" style="display: none;">
+                        <div class="font-setting-group">
+                            <label>Arapça Font Boyutu:</label>
+                            <div class="btn-group">
+                                <button class="btn-font-size" data-size="small" data-target="arabic">Küçük</button>
+                                <button class="btn-font-size active" data-size="medium" data-target="arabic">Orta</button>
+                                <button class="btn-font-size" data-size="large" data-target="arabic">Büyük</button>
+                            </div>
+                        </div>
+                        <div class="font-setting-group">
+                            <label>Arapça Font Stili:</label>
+                            <select id="arabic-font-family" class="font-select">
+                                <option value="'Traditional Arabic', serif">Traditional Arabic</option>
+                                <option value="'Amiri', serif">Amiri</option>
+                                <option value="'Scheherazade New', serif">Scheherazade New</option>
+                                <option value="'Noto Naskh Arabic', serif">Noto Naskh Arabic</option>
+                            </select>
+                        </div>
+                        <div class="font-setting-group">
+                            <label>Meal Font Boyutu:</label>
+                            <div class="btn-group">
+                                <button class="btn-font-size" data-size="small" data-target="turkish">Küçük</button>
+                                <button class="btn-font-size active" data-size="medium" data-target="turkish">Orta</button>
+                                <button class="btn-font-size" data-size="large" data-target="turkish">Büyük</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Meal Seçenekleri Paneli -->
+                <div class="translation-settings-panel">
+                    <button id="translation-settings-toggle" class="translation-settings-btn">
+                        <i class="fas fa-language"></i> Meal Seçenekleri
+                    </button>
+                    <div id="translation-settings-content" class="translation-settings-content" style="display: none;">
+                        <div class="translation-info">
+                            <p><i class="fas fa-info-circle"></i> Birden fazla meal seçerek karşılaştırma yapabilirsiniz</p>
+                        </div>
+                        <div class="translation-options">
+                            <label class="translation-option">
+                                <input type="checkbox" name="translation" value="diyanet" checked>
+                                <span class="translation-label">
+                                    <i class="fas fa-check-circle"></i>
+                                    <strong>Diyanet İşleri Meali</strong>
+                                    <small>T.C. Diyanet İşleri Başkanlığı</small>
+                                </span>
+                            </label>
+                            
+                            <label class="translation-option">
+                                <input type="checkbox" name="translation" value="elmali">
+                                <span class="translation-label">
+                                    <i class="fas fa-check-circle"></i>
+                                    <strong>Elmalılı Hamdi Yazır Meali</strong>
+                                    <small>Hak Dini Kur'an Dili</small>
+                                </span>
+                            </label>
+                            
+                            <label class="translation-option">
+                                <input type="checkbox" name="translation" value="ates">
+                                <span class="translation-label">
+                                    <i class="fas fa-check-circle"></i>
+                                    <strong>Süleyman Ateş Meali</strong>
+                                    <small>Kur'an-ı Kerim ve Yüce Meali</small>
+                                </span>
+                            </label>
+                            
+                            <label class="translation-option">
+                                <input type="checkbox" name="translation" value="yuksek">
+                                <span class="translation-label">
+                                    <i class="fas fa-check-circle"></i>
+                                    <strong>Ömer Nasuhi Bilmen Meali</strong>
+                                    <small>Kur'an-ı Kerim'in Türkçe Meali</small>
+                                </span>
+                            </label>
+                            
+                            <label class="translation-option">
+                                <input type="checkbox" name="translation" value="vakfi">
+                                <span class="translation-label">
+                                    <i class="fas fa-check-circle"></i>
+                                    <strong>Türkiye Diyanet Vakfı Meali</strong>
+                                    <small>Kur'an Yolu Tefsiri</small>
+                                </span>
+                            </label>
+                        </div>
+                        
+                        <div class="translation-actions">
+                            <button id="select-all-translations" class="btn-translation-action">
+                                <i class="fas fa-check-double"></i> Tümünü Seç
+                            </button>
+                            <button id="deselect-all-translations" class="btn-translation-action">
+                                <i class="fas fa-times"></i> Tümünü Kaldır
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="surah-header">
+                    <h1><%= surah.name %> Suresi</h1>
+                    <p class="surah-arabic-name"><%= surah.nameArabic %></p>
+                    <div class="surah-meta">
+                        <span><i class="fas fa-info-circle"></i> <%= surah.meaning %></span>
+                        <span><i class="fas fa-book"></i> <%= surah.numberOfAyahs %> Ayet</span>
+                        <span class="revelation-type <%= surah.revelationType.toLowerCase() %>">
+                            <i class="fas fa-location-dot"></i> <%= surah.revelationType %>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Audio Player Panel -->
+                <div class="audio-player-panel">
+                    <div class="audio-controls">
+                        <div class="reciter-selector">
+                            <label for="reciter-select">
+                                <i class="fas fa-microphone"></i> Kur'ra:
+                            </label>
+                            <select id="reciter-select" class="reciter-select">
+                                <option value="7">Abdulbasit Abdulsamad (Murattal)</option>
+                                <option value="1">Mishari Rashid al-Afasy</option>
+                                <option value="3">Abdurrahman as-Sudais</option>
+                                <option value="5">Saad al-Ghamdi</option>
+                                <option value="9">Mahmoud Khalil al-Husary</option>
+                                <option value="2">Abu Bakr al-Shatri</option>
+                                <option value="11">Mohamed Siddiq al-Minshawi</option>
+                            </select>
+                        </div>
+                        
+                        <div class="playback-controls">
+                            <button id="play-surah-btn" class="audio-btn play-btn" title="Tümünü Oynat">
+                                <i class="fas fa-play"></i> Sureyi Oynat
+                            </button>
+                            <button id="pause-btn" class="audio-btn pause-btn" style="display: none;">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button id="stop-btn" class="audio-btn stop-btn">
+                                <i class="fas fa-stop"></i>
+                            </button>
+                        </div>
+
+                        <div class="audio-settings">
+                            <label for="playback-speed">
+                                <i class="fas fa-gauge"></i> Hız:
+                            </label>
+                            <select id="playback-speed" class="speed-select">
+                                <option value="0.75">0.75x</option>
+                                <option value="1" selected>1x</option>
+                                <option value="1.25">1.25x</option>
+                                <option value="1.5">1.5x</option>
+                                <option value="2">2x</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="audio-progress">
+                        <div class="current-ayah-info" id="current-ayah-info" style="display: none;">
+                            <i class="fas fa-volume-up"></i> 
+                            <span id="current-ayah-text">Ayet <span id="current-ayah-num">1</span> oynatılıyor...</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ayahs-container">
+                    <% if (surah.ayahs && surah.ayahs.length > 0) { %>
+                        <% surah.ayahs.forEach(ayah => { %>
+                            <div class="ayah-card" id="ayah-<%= ayah.number %>" data-ayah="<%= ayah.number %>">
+                                <div class="ayah-number-badge"><%= ayah.number %></div>
+                                
+                                <!-- Ayah Audio Button -->
+                                <button class="ayah-play-btn" data-ayah="<%= ayah.number %>" title="Bu ayeti oynat">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                
+                                <% if (ayah.arabic) { %>
+                                    <div class="ayah-arabic">
+                                        <%= ayah.arabic %>
+                                    </div>
+                                <% } %>
+                                
+                                <% if (ayah.transliteration) { %>
+                                    <div class="ayah-transliteration">
+                                        <strong>Okunuşu:</strong> <%= ayah.transliteration %>
+                                    </div>
+                                <% } %>
+                                
+                                <!-- Meal Bölümü -->
+                                <div class="ayah-translations">
+                                    <% if (ayah.turkish) { %>
+                                        <div class="translation-item translation-diyanet">
+                                            <strong class="translation-title">
+                                                <i class="fas fa-book"></i> Diyanet İşleri:
+                                            </strong>
+                                            <p><%= ayah.turkish %></p>
+                                        </div>
+                                    <% } %>
+                                    
+                                    <% if (ayah.translations) { %>
+                                        <% if (ayah.translations.elmali) { %>
+                                        <div class="translation-item translation-elmali" style="display: none;">
+                                            <strong class="translation-title">
+                                                <i class="fas fa-book"></i> Elmalılı Hamdi Yazır:
+                                            </strong>
+                                            <p><%= ayah.translations.elmali %></p>
+                                        </div>
+                                        <% } %>
+                                        
+                                        <% if (ayah.translations.ates) { %>
+                                        <div class="translation-item translation-ates" style="display: none;">
+                                            <strong class="translation-title">
+                                                <i class="fas fa-book"></i> Süleyman Ateş:
+                                            </strong>
+                                            <p><%= ayah.translations.ates %></p>
+                                        </div>
+                                        <% } %>
+                                        
+                                        <% if (ayah.translations.yuksek) { %>
+                                        <div class="translation-item translation-yuksek" style="display: none;">
+                                            <strong class="translation-title">
+                                                <i class="fas fa-book"></i> Ömer Nasuhi Bilmen:
+                                            </strong>
+                                            <p><%= ayah.translations.yuksek %></p>
+                                        </div>
+                                        <% } %>
+                                        
+                                        <% if (ayah.translations.vakfi) { %>
+                                        <div class="translation-item translation-vakfi" style="display: none;">
+                                            <strong class="translation-title">
+                                                <i class="fas fa-book"></i> Diyanet Vakfı:
+                                            </strong>
+                                            <p><%= ayah.translations.vakfi %></p>
+                                        </div>
+                                        <% } %>
+                                    <% } %>
+                                </div>
+                                
+                                <!-- Tefsir Button -->
+                                <div class="ayah-actions">
+                                    <button class="btn-tafsir" data-surah="<%= surah.number %>" data-ayah="<%= ayah.number %>" title="Tefsiri Göster">
+                                        <i class="fas fa-book-open"></i> Tefsir
+                                    </button>
+                                </div>
+                                
+                                <!-- Tefsir Content (Hidden by default) -->
+                                <div class="tafsir-content" id="tafsir-<%= surah.number %>-<%= ayah.number %>" style="display: none;">
+                                    <div class="tafsir-loading">
+                                        <i class="fas fa-spinner fa-spin"></i> Tefsir yükleniyor...
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p class="no-content">Bu surenin ayetleri henüz eklenmemiş.</p>
+                    <% } %>
+                </div>
+
+                <div class="surah-navigation">
+                    <% if (surah.number > 1) { %>
+                        <a href="/quran/<%= surah.number - 1 %>" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Önceki Sure
+                        </a>
+                    <% } %>
+                    <a href="/quran" class="btn btn-primary">
+                        <i class="fas fa-list"></i> Sure Listesi
+                    </a>
+                    <% if (surah.number < 114) { %>
+                        <a href="/quran/<%= surah.number + 1 %>" class="btn btn-secondary">
+                            Sonraki Sure <i class="fas fa-arrow-right"></i>
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <style>
+        .surah-detail {
+            max-width: 900px;
+            margin: 2rem auto;
+        }
+
+        .surah-header {
+            background: linear-gradient(135deg, var(--primary-color), #1a4620);
+            color: var(--white);
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .surah-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .surah-arabic-name {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+            direction: rtl;
+        }
+
+        .surah-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-size: 1.1rem;
+        }
+
+        .revelation-type {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .revelation-type.mekki {
+            background: #28a745;
+        }
+
+        .revelation-type.medeni {
+            background: #17a2b8;
+        }
+
+        .ayahs-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+        }
+
+        .ayah-card {
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-right: 4px solid var(--accent-color);
+            position: relative;
+        }
+
+        .ayah-number-badge {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .ayah-arabic {
+            direction: rtl;
+            font-size: 2rem;
+            line-height: 2.5;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            text-align: right;
+            font-family: 'Traditional Arabic', serif;
+            transition: all 0.3s ease;
+        }
+
+        /* Font Size Variations */
+        .ayah-arabic.font-small { font-size: 1.5rem; }
+        .ayah-arabic.font-medium { font-size: 2rem; }
+        .ayah-arabic.font-large { font-size: 2.5rem; }
+
+        .ayah-turkish.font-small { font-size: 0.9rem; }
+        .ayah-turkish.font-medium { font-size: 1.1rem; }
+        .ayah-turkish.font-large { font-size: 1.3rem; }
+
+        /* Font Settings Panel */
+        .font-settings-panel {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .font-settings-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .font-settings-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .font-settings-content {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .font-setting-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .font-setting-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-font-size {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-font-size:hover {
+            border-color: var(--primary-color);
+        }
+
+        .btn-font-size.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .font-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        /* Translation Settings Panel */
+        .translation-settings-panel {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .translation-settings-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .translation-settings-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .translation-settings-content {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .translation-info {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .translation-info p {
+            margin: 0;
+            color: #00695c;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .translation-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .translation-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-color);
+        }
+
+        .translation-option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .translation-option input[type="checkbox"] {
+            display: none;
+        }
+
+        .translation-option input[type="checkbox"]:checked + .translation-label {
+            color: #667eea;
+        }
+
+        .translation-option input[type="checkbox"]:checked + .translation-label i {
+            color: #667eea;
+        }
+
+        .translation-option input[type="checkbox"]:not(:checked) + .translation-label i {
+            color: #ccc;
+        }
+
+        .translation-label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .translation-label i {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .translation-label strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .translation-label small {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .translation-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-translation-action {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-translation-action:hover {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        /* Translation Items in Ayah Cards */
+        .ayah-translations {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .translation-item {
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .translation-diyanet {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left-color: #4caf50;
+        }
+
+        .translation-elmali {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left-color: #2196f3;
+        }
+
+        .translation-ates {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left-color: #ff9800;
+        }
+
+        .translation-yuksek {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left-color: #9c27b0;
+        }
+
+        .translation-vakfi {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            border-left-color: #e91e63;
+        }
+
+        .translation-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .translation-item p {
+            margin: 0;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .ayah-transliteration {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #666;
+            padding: 1rem;
+            background: #fff3cd;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .ayah-transliteration strong {
+            color: #856404;
+            font-style: normal;
+        }
+
+        .ayah-turkish {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-color);
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .ayah-turkish strong {
+            color: var(--primary-color);
+        }
+
+        .surah-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        /* Audio Player Styles */
+        .audio-player-panel {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 3px 15px var(--shadow);
+        }
+
+        .audio-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .reciter-selector,
+        .audio-settings {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .reciter-selector label,
+        .audio-settings label {
+            font-weight: 600;
+            color: var(--text-color);
+            white-space: nowrap;
+        }
+
+        .reciter-select,
+        .speed-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .playback-controls {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .audio-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .audio-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .audio-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .play-btn {
+            background: #28a745;
+        }
+
+        .pause-btn {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .stop-btn {
+            background: #dc3545;
+        }
+
+        .audio-progress {
+            margin-top: 1rem;
+        }
+
+        .current-ayah-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+
+        /* Ayah Play Button */
+        .ayah-play-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        /* Tafsir Styles */
+        .ayah-actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-tafsir {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-tafsir:hover {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-tafsir.active {
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+        }
+
+        .tafsir-content {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tafsir-loading {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .tafsir-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tafsir-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .tafsir-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .tafsir-author {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .tafsir-text {
+            line-height: 1.8;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .tafsir-text h1,
+        .tafsir-text h2,
+        .tafsir-text h3 {
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tafsir-text h1 {
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .tafsir-text h2 {
+            font-size: 1.3rem;
+        }
+
+        .tafsir-text h3 {
+            font-size: 1.1rem;
+        }
+
+        .tafsir-text p {
+            margin: 1rem 0;
+        }
+
+        .tafsir-text strong {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .tafsir-error {
+            text-align: center;
+            padding: 1.5rem;
+            color: #dc3545;
+        }
+
+        .tafsir-error i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .ayah-play-btn:hover {
+            background: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        .ayah-play-btn i {
+            font-size: 0.9rem;
+        }
+
+        .ayah-card.playing {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #28a745;
+            animation: highlightAyah 1s ease;
+        }
+
+        @keyframes highlightAyah {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .audio-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .playback-controls {
+                justify-content: center;
+            }
+
+            .reciter-select {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <script>
+        // Font Settings Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            initFontSettings();
+            initTranslationSettings();
+        });
+
+        function initFontSettings() {
+            const toggle = document.getElementById('font-settings-toggle');
+            const content = document.getElementById('font-settings-content');
+            const arabicFontSelect = document.getElementById('arabic-font-family');
+            const fontSizeButtons = document.querySelectorAll('.btn-font-size');
+
+            // Load saved settings from localStorage
+            const savedArabicSize = localStorage.getItem('quran-arabic-size') || 'medium';
+            const savedTurkishSize = localStorage.getItem('quran-turkish-size') || 'medium';
+            const savedArabicFont = localStorage.getItem('quran-arabic-font') || "'Traditional Arabic', serif";
+
+            // Apply saved settings
+            applyFontSize('arabic', savedArabicSize);
+            applyFontSize('turkish', savedTurkishSize);
+            applyArabicFont(savedArabicFont);
+
+            // Set active buttons
+            fontSizeButtons.forEach(btn => {
+                const target = btn.dataset.target;
+                const size = btn.dataset.size;
+                if ((target === 'arabic' && size === savedArabicSize) || 
+                    (target === 'turkish' && size === savedTurkishSize)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Set font family dropdown
+            arabicFontSelect.value = savedArabicFont;
+
+            // Toggle settings panel
+            toggle.addEventListener('click', () => {
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+
+            // Font size buttons
+            fontSizeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.dataset.target;
+                    const size = btn.dataset.size;
+                    
+                    // Remove active class from siblings
+                    document.querySelectorAll(`[data-target="${target}"]`).forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    btn.classList.add('active');
+                    
+                    // Apply and save font size
+                    applyFontSize(target, size);
+                    localStorage.setItem(`quran-${target}-size`, size);
+                });
+            });
+
+            // Arabic font family
+            arabicFontSelect.addEventListener('change', (e) => {
+                const font = e.target.value;
+                applyArabicFont(font);
+                localStorage.setItem('quran-arabic-font', font);
+            });
+        }
+
+        function applyFontSize(target, size) {
+            const elements = document.querySelectorAll(`.ayah-${target}`);
+            elements.forEach(el => {
+                el.classList.remove('font-small', 'font-medium', 'font-large');
+                el.classList.add(`font-${size}`);
+            });
+        }
+
+        function applyArabicFont(font) {
+            const elements = document.querySelectorAll('.ayah-arabic');
+            elements.forEach(el => {
+                el.style.fontFamily = font;
+            });
+        }
+
+        // Translation Settings Initialization
+        function initTranslationSettings() {
+            const toggle = document.getElementById('translation-settings-toggle');
+            const content = document.getElementById('translation-settings-content');
+            const checkboxes = document.querySelectorAll('input[name="translation"]');
+            const selectAllBtn = document.getElementById('select-all-translations');
+            const deselectAllBtn = document.getElementById('deselect-all-translations');
+
+            // Load saved translation preferences
+            const savedTranslations = JSON.parse(localStorage.getItem('selected-translations')) || ['diyanet'];
+            
+            // Apply saved preferences
+            checkboxes.forEach(checkbox => {
+                if (savedTranslations.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                } else {
+                    checkbox.checked = false;
+                }
+            });
+            
+            // Apply visibility on load
+            applyTranslationVisibility(savedTranslations);
+
+            // Toggle panel
+            toggle.addEventListener('click', () => {
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+
+            // Checkbox change handler
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const selected = Array.from(checkboxes)
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    
+                    localStorage.setItem('selected-translations', JSON.stringify(selected));
+                    applyTranslationVisibility(selected);
+                });
+            });
+
+            // Select all button
+            selectAllBtn.addEventListener('click', () => {
+                checkboxes.forEach(cb => cb.checked = true);
+                const allTranslations = Array.from(checkboxes).map(cb => cb.value);
+                localStorage.setItem('selected-translations', JSON.stringify(allTranslations));
+                applyTranslationVisibility(allTranslations);
+            });
+
+            // Deselect all button
+            deselectAllBtn.addEventListener('click', () => {
+                checkboxes.forEach(cb => cb.checked = false);
+                localStorage.setItem('selected-translations', JSON.stringify([]));
+                applyTranslationVisibility([]);
+            });
+        }
+
+        function applyTranslationVisibility(selectedTranslations) {
+            // Hide all translations first
+            const allTranslations = ['diyanet', 'elmali', 'ates', 'yuksek', 'vakfi'];
+            
+            allTranslations.forEach(translationKey => {
+                const elements = document.querySelectorAll(`.translation-${translationKey}`);
+                if (selectedTranslations.includes(translationKey)) {
+                    elements.forEach(el => el.style.display = 'block');
+                } else {
+                    elements.forEach(el => el.style.display = 'none');
+                }
+            });
+        }
+
+        // Audio Player Functionality
+        class QuranAudioPlayer {
+            constructor(surahNumber, totalAyahs) {
+                this.surahNumber = surahNumber;
+                this.totalAyahs = totalAyahs;
+                this.currentAyah = 1;
+                this.isPlaying = false;
+                this.audio = new Audio();
+                this.reciterId = 7; // Default: Abdulbasit
+                
+                this.initElements();
+                this.attachEventListeners();
+                this.setupAudioEvents();
+            }
+
+            initElements() {
+                this.playSurahBtn = document.getElementById('play-surah-btn');
+                this.pauseBtn = document.getElementById('pause-btn');
+                this.stopBtn = document.getElementById('stop-btn');
+                this.reciterSelect = document.getElementById('reciter-select');
+                this.speedSelect = document.getElementById('playback-speed');
+                this.currentAyahInfo = document.getElementById('current-ayah-info');
+                this.currentAyahNum = document.getElementById('current-ayah-num');
+                this.progressFill = document.getElementById('progress-fill');
+                this.ayahPlayButtons = document.querySelectorAll('.ayah-play-btn');
+            }
+
+            attachEventListeners() {
+                this.playSurahBtn.addEventListener('click', () => this.playSurah());
+                this.pauseBtn.addEventListener('click', () => this.togglePause());
+                this.stopBtn.addEventListener('click', () => this.stop());
+                this.reciterSelect.addEventListener('change', (e) => {
+                    this.reciterId = e.target.value;
+                    if (this.isPlaying) {
+                        this.playAyah(this.currentAyah);
+                    }
+                });
+                this.speedSelect.addEventListener('change', (e) => {
+                    this.audio.playbackRate = parseFloat(e.target.value);
+                });
+
+                // Ayah play buttons
+                this.ayahPlayButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const ayahNum = parseInt(btn.dataset.ayah);
+                        this.playAyah(ayahNum);
+                    });
+                });
+            }
+
+            setupAudioEvents() {
+                this.audio.addEventListener('ended', () => {
+                    if (this.currentAyah < this.totalAyahs) {
+                        this.currentAyah++;
+                        this.playAyah(this.currentAyah);
+                    } else {
+                        this.stop();
+                    }
+                });
+
+                this.audio.addEventListener('error', (e) => {
+                    console.error('Audio error:', e);
+                    alert('Ses dosyası yüklenirken hata oluştu. Lütfen tekrar deneyin.');
+                    this.stop();
+                });
+
+                this.audio.addEventListener('loadstart', () => {
+                    this.playSurahBtn.disabled = true;
+                });
+
+                this.audio.addEventListener('canplay', () => {
+                    this.playSurahBtn.disabled = false;
+                });
+            }
+
+            getAudioUrl(ayahNumber) {
+                // Quran.com Audio API
+                // Format: https://verses.quran.com/{reciter_id}/{chapter:3d}_{verse:3d}.mp3
+                const chapter = String(this.surahNumber).padStart(3, '0');
+                const verse = String(ayahNumber).padStart(3, '0');
+                return `https://verses.quran.com/Abdurrahmaan_As-Sudais_192kbps/${chapter}${verse}.mp3`;
+            }
+
+            playAyah(ayahNumber) {
+                this.currentAyah = ayahNumber;
+                this.highlightAyah(ayahNumber);
+                
+                const audioUrl = this.getAudioUrl(ayahNumber);
+                this.audio.src = audioUrl;
+                this.audio.playbackRate = parseFloat(this.speedSelect.value);
+                
+                this.audio.play()
+                    .then(() => {
+                        this.isPlaying = true;
+                        this.updateUI();
+                        this.updateProgress();
+                    })
+                    .catch(error => {
+                        console.error('Play error:', error);
+                    });
+            }
+
+            playSurah() {
+                this.playAyah(1);
+            }
+
+            togglePause() {
+                if (this.audio.paused) {
+                    this.audio.play();
+                    this.isPlaying = true;
+                } else {
+                    this.audio.pause();
+                    this.isPlaying = false;
+                }
+                this.updateUI();
+            }
+
+            stop() {
+                this.audio.pause();
+                this.audio.currentTime = 0;
+                this.isPlaying = false;
+                this.currentAyah = 1;
+                this.clearHighlight();
+                this.updateUI();
+                this.progressFill.style.width = '0%';
+            }
+
+            updateUI() {
+                if (this.isPlaying && !this.audio.paused) {
+                    this.playSurahBtn.style.display = 'none';
+                    this.pauseBtn.style.display = 'flex';
+                    this.currentAyahInfo.style.display = 'flex';
+                    this.currentAyahNum.textContent = this.currentAyah;
+                } else if (this.audio.paused && this.currentAyah > 1) {
+                    this.playSurahBtn.style.display = 'none';
+                    this.pauseBtn.style.display = 'flex';
+                    this.currentAyahInfo.style.display = 'flex';
+                } else {
+                    this.playSurahBtn.style.display = 'flex';
+                    this.pauseBtn.style.display = 'none';
+                    this.currentAyahInfo.style.display = 'none';
+                }
+            }
+
+            updateProgress() {
+                const progress = (this.currentAyah / this.totalAyahs) * 100;
+                this.progressFill.style.width = progress + '%';
+            }
+
+            highlightAyah(ayahNumber) {
+                // Remove previous highlights
+                this.clearHighlight();
+                
+                // Highlight current ayah
+                const ayahCard = document.getElementById(`ayah-${ayahNumber}`);
+                if (ayahCard) {
+                    ayahCard.classList.add('playing');
+                    ayahCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            clearHighlight() {
+                document.querySelectorAll('.ayah-card.playing').forEach(card => {
+                    card.classList.remove('playing');
+                });
+            }
+        }
+
+        // Tafsir Functionality
+        class TafsirManager {
+            constructor() {
+                this.cache = new Map(); // Cache tafsir data
+                this.currentTafsir = 169; // Ibn Kathir (English)
+                this.attachEventListeners();
+            }
+
+            attachEventListeners() {
+                // Handle all tafsir button clicks
+                document.addEventListener('click', async (e) => {
+                    const btn = e.target.closest('.btn-tafsir');
+                    if (!btn) return;
+
+                    const surahNum = btn.dataset.surah;
+                    const ayahNum = btn.dataset.ayah;
+                    const tafsirId = `tafsir-${surahNum}-${ayahNum}`;
+                    const tafsirDiv = document.getElementById(tafsirId);
+
+                    if (!tafsirDiv) return;
+
+                    // Toggle visibility
+                    if (tafsirDiv.style.display === 'block') {
+                        tafsirDiv.style.display = 'none';
+                        btn.classList.remove('active');
+                    } else {
+                        // Close other open tafsirs
+                        document.querySelectorAll('.tafsir-content').forEach(tc => {
+                            tc.style.display = 'none';
+                        });
+                        document.querySelectorAll('.btn-tafsir').forEach(b => {
+                            b.classList.remove('active');
+                        });
+
+                        tafsirDiv.style.display = 'block';
+                        btn.classList.add('active');
+
+                        // Load tafsir if not already loaded
+                        if (!tafsirDiv.dataset.loaded) {
+                            await this.loadTafsir(surahNum, ayahNum, tafsirDiv);
+                        }
+                    }
+                });
+            }
+
+            async loadTafsir(surahNum, ayahNum, container) {
+                const cacheKey = `${surahNum}:${ayahNum}`;
+
+                try {
+                    // Check cache first
+                    if (this.cache.has(cacheKey)) {
+                        this.displayTafsir(this.cache.get(cacheKey), container);
+                        return;
+                    }
+
+                    // Show loading
+                    container.innerHTML = `
+                        <div class="tafsir-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Tefsir yükleniyor...
+                        </div>
+                    `;
+
+                    // Fetch from Quran.com API
+                    const response = await fetch(
+                        `https://api.quran.com/api/v4/tafsirs/${this.currentTafsir}/by_ayah/${surahNum}:${ayahNum}`
+                    );
+
+                    if (!response.ok) {
+                        throw new Error('Tefsir yüklenemedi');
+                    }
+
+                    const data = await response.json();
+                    
+                    if (!data.tafsir || !data.tafsir.text) {
+                        throw new Error('Tefsir bulunamadı');
+                    }
+
+                    // Cache the result
+                    this.cache.set(cacheKey, data.tafsir);
+                    
+                    // Display
+                    this.displayTafsir(data.tafsir, container);
+                    container.dataset.loaded = 'true';
+
+                } catch (error) {
+                    console.error('Tafsir error:', error);
+                    container.innerHTML = `
+                        <div class="tafsir-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Tefsir yüklenirken bir hata oluştu.</p>
+                            <small>${error.message}</small>
+                        </div>
+                    `;
+                }
+            }
+
+            displayTafsir(tafsir, container) {
+                const header = `
+                    <div class="tafsir-header">
+                        <div class="tafsir-icon">
+                            <i class="fas fa-book-quran"></i>
+                        </div>
+                        <div>
+                            <h3 class="tafsir-title">${tafsir.resource_name || 'Tefsir'}</h3>
+                            <p class="tafsir-author">Yazar: ${tafsir.language_name || 'Bilinmiyor'}</p>
+                        </div>
+                    </div>
+                `;
+
+                const content = `
+                    <div class="tafsir-text">
+                        ${tafsir.text}
+                    </div>
+                `;
+
+                container.innerHTML = header + content;
+            }
+        }
+
+        // Initialize Audio Player & Tafsir Manager
+        let audioPlayer;
+        let tafsirManager;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const surahNumber = <%= surah.number %>;
+            const totalAyahs = <%= surah.numberOfAyahs %>;
+            audioPlayer = new QuranAudioPlayer(surahNumber, totalAyahs);
+            tafsirManager = new TafsirManager();
+        });
+    </script>
+</body>
+</html>

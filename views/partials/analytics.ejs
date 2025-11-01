@@ -1,0 +1,121 @@
+<!-- Google Analytics -->
+<% if (process.env.NODE_ENV === 'production') { %>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+<% } %>
+
+<!-- Custom Analytics -->
+<script>
+class AnalyticsTracker {
+    constructor() {
+        this.sessionId = this.generateSessionId();
+        this.startTime = Date.now();
+        this.events = [];
+        this.initTracking();
+    }
+    
+    generateSessionId() {
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    initTracking() {
+        // Sayfa görüntüleme
+        this.trackPageView();
+        
+        // Tıklama izleme
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                this.trackEvent('click', 'link', e.target.href);
+            }
+        });
+        
+        // Scroll derinliği
+        let maxScroll = 0;
+        window.addEventListener('scroll', () => {
+            const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+            if (scrollPercent > maxScroll) {
+                maxScroll = scrollPercent;
+                if (scrollPercent > 25 && scrollPercent < 30) this.trackEvent('scroll', '25%');
+                if (scrollPercent > 50 && scrollPercent < 55) this.trackEvent('scroll', '50%');
+                if (scrollPercent > 75 && scrollPercent < 80) this.trackEvent('scroll', '75%');
+                if (scrollPercent > 90) this.trackEvent('scroll', '100%');
+            }
+        });
+        
+        // Sayfa ayrılma
+        window.addEventListener('beforeunload', () => {
+            this.trackEvent('session', 'duration', Math.floor((Date.now() - this.startTime) / 1000));
+            this.sendAnalytics();
+        });
+        
+        // Periyodik gönderim (her 30 saniye)
+        setInterval(() => this.sendAnalytics(), 30000);
+    }
+    
+    trackPageView() {
+        this.trackEvent('pageview', window.location.pathname);
+    }
+    
+    trackEvent(category, action, label = '', value = 0) {
+        const event = {
+            category,
+            action,
+            label,
+            value,
+            timestamp: Date.now(),
+            sessionId: this.sessionId,
+            page: window.location.pathname
+        };
+        
+        this.events.push(event);
+        
+        // Google Analytics'e de gönder (varsa)
+        if (typeof gtag !== 'undefined') {
+            gtag('event', action, {
+                event_category: category,
+                event_label: label,
+                value: value
+            });
+        }
+    }
+    
+    async sendAnalytics() {
+        if (this.events.length === 0) return;
+        
+        try {
+            await fetch('/api/analytics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sessionId: this.sessionId,
+                    events: this.events,
+                    userAgent: navigator.userAgent,
+                    screen: {
+                        width: window.screen.width,
+                        height: window.screen.height
+                    },
+                    viewport: {
+                        width: window.innerWidth,
+                        height: window.innerHeight
+                    }
+                })
+            });
+            
+            this.events = [];
+        } catch (error) {
+            console.error('Analytics send failed:', error);
+        }
+    }
+}
+
+// Initialize
+const analytics = new AnalyticsTracker();
+
+// Export for global use
+window.analytics = analytics;
+</script>

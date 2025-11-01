@@ -1,0 +1,141 @@
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fas fa-mosque"></i> İslami Portal</h4>
+                <p>İslam ile ilgili tüm bilgilere ulaşabileceğiniz kapsamlı bir platform.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Hızlı Erişim</h4>
+                <ul>
+                    <li><a href="/quran"><i class="fas fa-book-quran"></i> Kuran-ı Kerim</a></li>
+                    <li><a href="/hadiths"><i class="fas fa-scroll"></i> Hadisler</a></li>
+                    <li><a href="/prayer-times"><i class="fas fa-clock"></i> Namaz Vakitleri</a></li>
+                    <li><a href="/esma"><i class="fas fa-star-and-crescent"></i> Esma-ül Hüsna</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>İbadet</h4>
+                <ul>
+                    <li><a href="/guides"><i class="fas fa-book-open-reader"></i> İbadet Rehberleri</a></li>
+                    <li><a href="/duas"><i class="fas fa-hands-praying"></i> Dualar</a></li>
+                    <li><a href="/posts"><i class="fas fa-comments"></i> Sohbet</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>İletişim</h4>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> info@islamiportal.com</li>
+                    <li><i class="fas fa-phone"></i> +90 555 123 4567</li>
+                    <li><i class="fas fa-location-dot"></i> İstanbul, Türkiye</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; <%= new Date().getFullYear() %> İslami Portal. Tüm hakları saklıdır.</p>
+            <p>
+                <a href="#">Gizlilik Politikası</a> | 
+                <a href="#">Kullanım Şartları</a> | 
+                <a href="#">Hakkımızda</a>
+            </p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .footer {
+        background: linear-gradient(135deg, var(--primary-color), #1a4620);
+        color: var(--white);
+        padding: 3rem 0 1rem;
+        margin-top: 5rem;
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .footer-section h4 {
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .footer-section p {
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-section ul li a,
+    .footer-section ul li {
+        color: rgba(255, 255, 255, 0.8);
+        transition: color 0.3s;
+    }
+
+    .footer-section ul li a:hover {
+        color: var(--accent-color);
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .social-links a {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .social-links a:hover {
+        background: var(--accent-color);
+        transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .footer-bottom p {
+        margin: 0.5rem 0;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .footer-bottom a {
+        color: var(--accent-color);
+        transition: color 0.3s;
+    }
+
+    .footer-bottom a:hover {
+        color: var(--white);
+    }
+</style>

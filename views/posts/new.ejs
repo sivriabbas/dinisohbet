@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Paylaşım - Dini Sohbet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="form-container">
+                <h1>Yeni Paylaşım Oluştur</h1>
+                
+                <% if (error) { %>
+                    <div class="alert alert-error">
+                        <%= error %>
+                    </div>
+                <% } %>
+
+                <form action="/posts/new" method="POST" class="post-form">
+                    <div class="form-group">
+                        <label for="title">Başlık</label>
+                        <input type="text" id="title" name="title" required maxlength="200">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Kategori</label>
+                        <select id="category" name="category">
+                            <option value="genel">Genel</option>
+                            <option value="dua">Dua</option>
+                            <option value="hadis">Hadis</option>
+                            <option value="ayet">Ayet</option>
+                            <option value="sohbet">Sohbet</option>
+                            <option value="soru-cevap">Soru & Cevap</option>
+                            <option value="hikaye">Hikaye</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content">İçerik</label>
+                        <textarea id="content" name="content" required maxlength="5000" rows="10"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags">Etiketler (virgülle ayırın)</label>
+                        <input type="text" id="tags" name="tags" placeholder="örnek: namaz, dua, ramazan">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Paylaş</button>
+                        <a href="/posts" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>
